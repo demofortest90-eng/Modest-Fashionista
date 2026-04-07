@@ -1,0 +1,828 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+    :root {
+        --mf-purple: #7c3aed;
+        --mf-purple-light: #8b5cf6;
+        --mf-purple-pale: #a78bfa;
+        --mf-purple-muted: #c4b5fd;
+        --mf-purple-faint: #ede9fe;
+        --mf-purple-ghost: #f5f3ff;
+        --mf-violet: #6d28d9;
+        --mf-plum: #5b21b6;
+        --mf-dark: #1e1033;
+        --mf-dark-soft: #2d1b4e;
+        --mf-surface: #fafafa;
+        --mf-border: rgba(124, 58, 237, 0.06);
+        --mf-border-soft: rgba(0, 0, 0, 0.05);
+        --mf-shadow-sm: 0 2px 8px rgba(124,58,237,0.04), 0 1px 3px rgba(0,0,0,0.03);
+        --mf-shadow-md: 0 8px 24px rgba(124,58,237,0.06), 0 2px 6px rgba(0,0,0,0.04);
+        --mf-shadow-lg: 0 20px 48px rgba(124,58,237,0.08), 0 8px 16px rgba(0,0,0,0.04);
+        --mf-shadow-xl: 0 32px 64px rgba(124,58,237,0.12), 0 12px 24px rgba(0,0,0,0.06);
+        --mf-radius-sm: 10px;
+        --mf-radius-md: 14px;
+        --mf-radius-lg: 20px;
+        --mf-radius-xl: 28px;
+        --mf-radius-full: 9999px;
+        --mf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        --mf-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --mf-transition: 0.4s var(--mf-ease);
+        --mf-transition-fast: 0.2s var(--mf-ease);
+        --mf-transition-bounce: 0.6s var(--mf-ease-bounce);
+    }
+
+    /* ═══════════════ BREADCRUMB ═══════════════ */
+    .mf-breadcrumb {
+        display: flex; align-items: center; gap: 8px;
+        padding: 0; margin-bottom: 32px;
+        list-style: none; font-size: 0.82rem;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-breadcrumb li { display: flex; align-items: center; gap: 8px; }
+    .mf-breadcrumb a {
+        color: #94a3b8; text-decoration: none; font-weight: 500;
+        transition: var(--mf-transition-fast);
+    }
+    .mf-breadcrumb a:hover { color: var(--mf-purple); }
+    .mf-breadcrumb .mf-sep { color: #cbd5e1; font-size: 0.7rem; }
+    .mf-breadcrumb .mf-current {
+        color: var(--mf-dark); font-weight: 700;
+        max-width: 200px; white-space: nowrap;
+        overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ═══════════════ IMAGE GALLERY ═══════════════ */
+    .mf-gallery-card {
+        background: white; border-radius: var(--mf-radius-xl);
+        border: 1px solid var(--mf-border-soft);
+        overflow: hidden;
+        box-shadow: var(--mf-shadow-sm);
+        transition: var(--mf-transition);
+        position: relative;
+    }
+    .mf-gallery-card::after {
+        content: ''; position: absolute; inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(124,58,237,0.008) 1px, transparent 0);
+        background-size: 22px 22px;
+        pointer-events: none; z-index: 0;
+    }
+
+    .mf-main-viewer {
+        position: relative;
+        background: linear-gradient(145deg, var(--mf-purple-ghost) 0%, #f1f5f9 50%, var(--mf-purple-ghost) 100%);
+        border-radius: var(--mf-radius-lg);
+        overflow: hidden; z-index: 1;
+    }
+    .mf-main-viewer .ratio { border-radius: var(--mf-radius-lg); }
+
+    .mf-main-viewer img {
+        width: 100%; height: 100%;
+        object-fit: contain; padding: 32px;
+        transition: transform 0.5s var(--mf-ease), opacity 0.3s ease;
+    }
+    .mf-main-viewer:hover img { transform: scale(1.04); }
+
+    .mf-main-viewer iframe {
+        width: 100%; height: 100%;
+        border: none; border-radius: var(--mf-radius-lg);
+    }
+
+    .mf-zoom-hint {
+        position: absolute; bottom: 16px; right: 16px;
+        width: 36px; height: 36px; border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(8px);
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b; font-size: 0.75rem;
+        opacity: 0; transition: var(--mf-transition);
+        pointer-events: none; z-index: 2;
+    }
+    .mf-main-viewer:hover .mf-zoom-hint { opacity: 1; }
+
+    .mf-savings-badge {
+        position: absolute; top: 20px; right: 20px; z-index: 3;
+        display: flex; flex-direction: column; align-items: center;
+        padding: 12px 16px; border-radius: 14px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white; box-shadow: 0 8px 24px rgba(239,68,68,0.3);
+    }
+    .mf-savings-pct { font-size: 1.2rem; font-weight: 900; line-height: 1; font-family: 'Inter', sans-serif; }
+    .mf-savings-label { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; font-family: 'Inter', sans-serif; }
+
+    .mf-thumbs-row {
+        display: flex; gap: 10px;
+        padding: 16px 4px 4px;
+        overflow-x: auto; scrollbar-width: none;
+        position: relative; z-index: 1;
+    }
+    .mf-thumbs-row::-webkit-scrollbar { display: none; }
+
+    .mf-thumb {
+        min-width: 76px; height: 76px;
+        border-radius: var(--mf-radius-sm);
+        border: 2px solid var(--mf-border-soft);
+        cursor: pointer; transition: var(--mf-transition);
+        background: white; padding: 6px;
+        position: relative; overflow: hidden;
+    }
+    .mf-thumb img {
+        width: 100%; height: 100%;
+        object-fit: contain; border-radius: 6px;
+        transition: var(--mf-transition);
+    }
+    .mf-thumb::after {
+        content: ''; position: absolute; inset: 0;
+        border-radius: inherit;
+        box-shadow: inset 0 0 0 2px transparent;
+        transition: box-shadow 0.3s ease;
+    }
+    .mf-thumb:hover { border-color: rgba(124,58,237,0.3); transform: translateY(-2px); }
+    .mf-thumb:hover img { transform: scale(1.08); }
+    .mf-thumb.active {
+        border-color: var(--mf-purple);
+        background: rgba(124,58,237,0.04);
+        box-shadow: 0 4px 16px rgba(124,58,237,0.15);
+    }
+    .mf-thumb.active::after {
+        box-shadow: inset 0 0 0 2px var(--mf-purple);
+    }
+
+    .mf-thumb-video {
+        background: var(--mf-dark) !important;
+        border-color: rgba(255,255,255,0.1) !important;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .mf-thumb-video i { color: white; font-size: 1.4rem; position: relative; z-index: 1; }
+    .mf-thumb-video .mf-play-ring {
+        position: absolute; inset: 0;
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: inherit;
+    }
+    .mf-thumb-video:hover { border-color: rgba(255,255,255,0.2) !important; }
+
+    /* ═══════════════ PRODUCT INFO ═══════════════ */
+    .mf-info-section { position: relative; }
+
+    .mf-trust-row {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .mf-trust-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: var(--mf-radius-full);
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-trust-authentic {
+        background: rgba(124,58,237,0.08);
+        color: var(--mf-violet);
+        border: 1px solid rgba(124,58,237,0.1);
+    }
+    .mf-trust-authentic i { color: var(--mf-purple-light); }
+    .mf-trust-stock {
+        background: rgba(5,150,105,0.08);
+        color: #059669;
+        border: 1px solid rgba(5,150,105,0.1);
+    }
+    .mf-trust-soldout {
+        background: rgba(239,68,68,0.08);
+        color: #ef4444;
+        border: 1px solid rgba(239,68,68,0.1);
+    }
+
+    .mf-product-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.85rem; font-weight: 600;
+        color: var(--mf-dark); line-height: 1.25;
+        margin-bottom: 16px;
+    }
+
+    .mf-rating-row {
+        display: flex; align-items: center; gap: 12px;
+        margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .mf-stars { display: flex; gap: 2px; }
+    .mf-stars i { color: #f59e0b; font-size: 0.8rem; }
+    .mf-stars i.empty { color: #e2e8f0; }
+    .mf-rating-num { font-weight: 800; color: var(--mf-dark); font-size: 0.9rem; font-family: 'Inter', sans-serif; }
+    .mf-rating-sep { width: 1px; height: 14px; background: #e2e8f0; }
+    .mf-sold-count { font-size: 0.8rem; color: #94a3b8; font-weight: 500; font-family: 'Inter', sans-serif; }
+
+    /* Price Block */
+    .mf-price-block {
+        background: white; border-radius: var(--mf-radius-lg);
+        border: 1px solid var(--mf-border-soft);
+        padding: 24px; margin-bottom: 28px;
+        position: relative; overflow: hidden;
+        box-shadow: var(--mf-shadow-sm);
+    }
+    .mf-price-block::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+        background: linear-gradient(180deg, var(--mf-purple), var(--mf-violet));
+        border-radius: 0 4px 4px 0;
+    }
+    .mf-price-block::after {
+        content: ''; position: absolute; top: -30px; right: -30px;
+        width: 100px; height: 100px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(124,58,237,0.06), transparent);
+    }
+    .mf-price-main {
+        font-size: 2.2rem; font-weight: 900;
+        color: var(--mf-violet);
+        letter-spacing: -0.03em; line-height: 1;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-price-currency { font-size: 1.3rem; font-weight: 700; }
+    .mf-price-old {
+        font-size: 0.95rem; color: #94a3b8;
+        text-decoration: line-through; font-weight: 500;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-price-save {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 0.7rem; font-weight: 800;
+        color: #ef4444; background: #fef2f2;
+        padding: 4px 10px; border-radius: var(--mf-radius-full);
+        border: 1px solid rgba(239,68,68,0.08);
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Variants */
+    .mf-variant-section { margin-bottom: 28px; }
+    .mf-section-label {
+        font-size: 0.66rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 14px;
+        display: flex; align-items: center; gap: 8px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-section-label::after {
+        content: ''; flex: 1; height: 1px;
+        background: linear-gradient(90deg, var(--mf-border-soft), transparent);
+    }
+
+    .mf-variant-input { display: none; }
+    .mf-variant-label {
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 2px solid #e2e8f0;
+        border-radius: var(--mf-radius-full); padding: 10px 28px;
+        font-weight: 700; font-size: 0.85rem;
+        color: #64748b; cursor: pointer;
+        transition: var(--mf-transition);
+        position: relative; overflow: hidden;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-variant-label::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--mf-purple), var(--mf-violet));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .mf-variant-label span { position: relative; z-index: 1; }
+    .mf-variant-label:hover {
+        border-color: var(--mf-purple); color: var(--mf-purple);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(124,58,237,0.12);
+    }
+    .mf-variant-input:checked + .mf-variant-label {
+        border-color: transparent; color: white;
+        box-shadow: 0 6px 20px rgba(124,58,237,0.3);
+        transform: translateY(-2px);
+    }
+    .mf-variant-input:checked + .mf-variant-label::before { opacity: 1; }
+
+    /* Description */
+    .mf-desc-block {
+        background: white; border-radius: var(--mf-radius-lg);
+        border: 1px solid var(--mf-border-soft);
+        padding: 24px; margin-bottom: 32px;
+        box-shadow: var(--mf-shadow-sm);
+    }
+    .mf-desc-text {
+        white-space: pre-line;
+        line-height: 1.85; color: #475569;
+        font-size: 0.92rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* ═══════════════ ACTION BUTTONS ═══════════════ */
+    .mf-actions-desktop { margin-bottom: 12px; }
+    .mf-btn-buy {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 56px;
+        border: none; border-radius: var(--mf-radius-md);
+        background: var(--mf-dark); color: white;
+        font-size: 0.88rem; font-weight: 800;
+        letter-spacing: 0.08em; text-transform: uppercase;
+        cursor: pointer; transition: var(--mf-transition);
+        position: relative; overflow: hidden;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-btn-buy::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--mf-purple), var(--mf-violet));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .mf-btn-buy span, .mf-btn-buy i { position: relative; z-index: 1; }
+    .mf-btn-buy:hover::before { opacity: 1; }
+    .mf-btn-buy:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(124,58,237,0.3);
+        color: white;
+    }
+    .mf-btn-buy:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 3px;
+    }
+    .mf-buy-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.8rem; transition: var(--mf-transition-bounce);
+    }
+    .mf-btn-buy:hover .mf-buy-icon { transform: rotate(-15deg) scale(1.15); }
+
+    .mf-btn-cart {
+        display: flex; align-items: center; justify-content: center;
+        width: 100%; height: 56px;
+        border: 2px solid #e2e8f0; border-radius: var(--mf-radius-md);
+        background: white; color: var(--mf-violet);
+        font-size: 0.9rem; font-weight: 800;
+        cursor: pointer; transition: var(--mf-transition);
+        text-decoration: none;
+    }
+    .mf-btn-cart:hover {
+        border-color: var(--mf-purple); color: var(--mf-purple);
+        background: rgba(124,58,237,0.03);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(124,58,237,0.12);
+    }
+    .mf-btn-cart:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 3px;
+    }
+
+    .mf-btn-whatsapp {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 52px;
+        border: none; border-radius: var(--mf-radius-md);
+        background: linear-gradient(135deg, #25d366, #128c7e);
+        color: white; font-size: 0.88rem; font-weight: 700;
+        cursor: pointer; transition: var(--mf-transition);
+        text-decoration: none;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-btn-whatsapp:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 28px rgba(37,211,102,0.3);
+        color: white;
+    }
+    .mf-btn-whatsapp:focus-visible {
+        outline: 2px solid #25d366;
+        outline-offset: 3px;
+    }
+    .mf-wa-icon {
+        width: 26px; height: 26px; border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.85rem;
+    }
+
+    .mf-btn-unavailable {
+        width: 100%; height: 56px;
+        border: 2px dashed #e2e8f0; border-radius: var(--mf-radius-md);
+        background: var(--mf-surface); color: #94a3b8;
+        font-size: 0.88rem; font-weight: 700;
+        cursor: not-allowed;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .mf-trust-signals {
+        display: flex; gap: 16px; flex-wrap: wrap;
+        padding: 16px 0; margin-top: 8px;
+    }
+    .mf-trust-item {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.7rem; color: #94a3b8; font-weight: 600;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-trust-item i {
+        width: 28px; height: 28px; border-radius: 8px;
+        background: var(--mf-purple-ghost);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; color: var(--mf-purple);
+    }
+
+    /* ═══════════════ MOBILE BOTTOM BAR ═══════════════ */
+    .mf-mobile-bar {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: rgba(255,255,255,0.92);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        z-index: 1050; padding: 12px 16px;
+        box-shadow: 0 -8px 30px rgba(0,0,0,0.08);
+        border-top: 1px solid var(--mf-border-soft);
+    }
+    .mf-mobile-bar-inner {
+        display: flex; gap: 10px; align-items: center;
+        max-width: 600px; margin: 0 auto;
+    }
+    .mf-mobile-icon-btn {
+        width: 50px; height: 50px; flex-shrink: 0;
+        border-radius: var(--mf-radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem; cursor: pointer;
+        transition: var(--mf-transition); text-decoration: none;
+        border: 1px solid var(--mf-border-soft); background: white;
+    }
+    .mf-mobile-icon-btn i { position: relative; z-index: 1; }
+    .mf-mobile-icon-btn.wa-btn {
+        background: linear-gradient(135deg, #25d366, #128c7e);
+        border-color: transparent; color: white;
+    }
+    .mf-mobile-icon-btn.wa-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(37,211,102,0.3);
+        color: white;
+    }
+    .mf-mobile-icon-btn.cart-btn-m { color: var(--mf-violet); }
+    .mf-mobile-icon-btn.cart-btn-m:hover {
+        border-color: var(--mf-purple); color: var(--mf-purple);
+        transform: translateY(-3px);
+    }
+    .mf-mobile-icon-btn:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 2px;
+    }
+
+    .mf-mobile-buy {
+        flex: 1; height: 50px;
+        border: none; border-radius: var(--mf-radius-sm);
+        background: var(--mf-dark); color: white;
+        font-size: 0.82rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        cursor: pointer; transition: var(--mf-transition);
+        position: relative; overflow: hidden;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-mobile-buy::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--mf-purple), var(--mf-violet));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .mf-mobile-buy span { position: relative; z-index: 1; }
+    .mf-mobile-buy:hover::before { opacity: 1; }
+    .mf-mobile-buy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(124,58,237,0.25);
+        color: white;
+    }
+    .mf-mobile-buy.unavailable {
+        background: var(--mf-surface); color: #94a3b8;
+        cursor: not-allowed; border: 1px dashed #e2e8f0;
+    }
+    .mf-mobile-buy.unavailable::before { display: none; }
+    .mf-mobile-buy.unavailable:hover { transform: none; box-shadow: none; }
+
+    /* ═══════════════ ANIMATIONS ═══════════════ */
+    .mf-fade-up {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.6s ease, transform 0.6s var(--mf-ease);
+    }
+    .mf-fade-up.mf-visible { opacity: 1; transform: translateY(0); }
+    .mf-fade-left {
+        opacity: 0; transform: translateX(-28px);
+        transition: opacity 0.6s ease, transform 0.6s var(--mf-ease);
+    }
+    .mf-fade-left.mf-visible { opacity: 1; transform: translateX(0); }
+    .mf-fade-right {
+        opacity: 0; transform: translateX(28px);
+        transition: opacity 0.6s ease, transform 0.6s var(--mf-ease);
+    }
+    .mf-fade-right.mf-visible { opacity: 1; transform: translateX(0); }
+
+    @keyframes mfImgSwap {
+        from { opacity: 0; transform: scale(0.96); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .mf-img-entering { animation: mfImgSwap 0.35s var(--mf-ease) forwards; }
+
+    @keyframes mfPricePop {
+        0% { transform: scale(1); }
+        40% { transform: scale(1.06); }
+        100% { transform: scale(1); }
+    }
+    .mf-price-pop { animation: mfPricePop 0.35s ease; }
+
+    /* ═══════════════ REDUCED MOTION ═══════════════ */
+    @media (prefers-reduced-motion: reduce) {
+        .mf-fade-up, .mf-fade-left, .mf-fade-right { opacity: 1; transform: none; transition: none; }
+        .mf-img-entering { animation: none !important; opacity: 1; transform: none; }
+        .mf-price-pop { animation: none !important; }
+        .mf-main-viewer:hover img { transform: none !important; }
+        .mf-btn-buy:hover, .mf-btn-cart:hover, .mf-btn-whatsapp:hover,
+        .mf-mobile-buy:hover, .mf-mobile-icon-btn:hover,
+        .mf-variant-label:hover, .mf-thumb:hover { transform: none !important; }
+    }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .mf-product-title { font-size: 1.5rem; }
+        .mf-price-main { font-size: 1.8rem; }
+        .mf-price-block { padding: 20px; }
+    }
+
+    @media (max-width: 767px) {
+        .mf-breadcrumb { margin-bottom: 20px; font-size: 0.75rem; }
+        .mf-breadcrumb .mf-current { max-width: 120px; }
+        .mf-gallery-card { border-radius: var(--mf-radius-lg); }
+        .mf-main-viewer { border-radius: var(--mf-radius-md); }
+        .mf-main-viewer img { padding: 20px; }
+        .mf-thumb { min-width: 64px; height: 64px; border-radius: 8px; padding: 5px; }
+        .mf-savings-badge { top: 12px; right: 12px; padding: 8px 12px; border-radius: 10px; }
+        .mf-savings-pct { font-size: 1rem; }
+        .mf-product-title { font-size: 1.3rem; margin-bottom: 12px; }
+        .mf-price-main { font-size: 1.6rem; }
+        .mf-price-block { padding: 16px; border-radius: var(--mf-radius-md); margin-bottom: 20px; }
+        .mf-variant-label { padding: 8px 20px; font-size: 0.8rem; }
+        .mf-desc-block { padding: 16px; border-radius: var(--mf-radius-md); margin-bottom: 24px; }
+        .mf-desc-text { font-size: 0.85rem; line-height: 1.7; }
+        .mf-trust-signals { gap: 10px; }
+        .mf-zoom-hint { display: none !important; }
+        main { padding-bottom: 90px; }
+    }
+
+    @media (max-width: 400px) {
+        .mf-mobile-icon-btn { width: 46px; height: 46px; }
+        .mf-mobile-buy { height: 46px; font-size: 0.75rem; }
+    }
+</style>
+
+<div class="container py-4 mb-5">
+    <ul class="mf-breadcrumb mf-fade-up">
+        <li><a href="/"><i class="fa-solid fa-house" style="font-size:0.7rem;"></i></a></li>
+        <li><span class="mf-sep"><i class="fa-solid fa-chevron-right"></i></span></li>
+        <li><a href="/category/{{ p.category|lower }}">{{ p.category }}</a></li>
+        <li><span class="mf-sep"><i class="fa-solid fa-chevron-right"></i></span></li>
+        <li><span class="mf-current">{{ p.title }}</span></li>
+    </ul>
+
+    <div class="row g-4 g-lg-5">
+        <!-- ══════ GALLERY ══════ -->
+        <div class="col-md-6 mf-fade-left">
+            <div class="mf-gallery-card">
+                <div class="mf-main-viewer" id="mainViewer">
+                    <div id="mainMediaWrapper" class="ratio ratio-1x1">
+                        <img src="{{ p.main_image }}" id="mainView" alt="{{ p.title }}">
+                    </div>
+                    <div class="mf-zoom-hint">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </div>
+                    {% if p.del_price and p.del_price|int > p.price|int %}
+                    <div class="mf-savings-badge">
+                        <span class="mf-savings-pct">-{{ ((p.del_price|int - p.price|int) / p.del_price|int * 100)|round|int }}%</span>
+                        <span class="mf-savings-label">Savings</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mf-thumbs-row">
+                    <div class="mf-thumb active" onclick="swapToImage('{{ p.main_image }}', this)">
+                        <img src="{{ p.main_image }}" alt="Thumbnail">
+                    </div>
+                    {% if p.extra_images %}
+                        {% for img in p.extra_images %}
+                        <div class="mf-thumb" onclick="swapToImage('{{ img }}', this)">
+                            <img src="{{ img }}" alt="Thumbnail">
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if p.video_url %}
+                    <div class="mf-thumb mf-thumb-video" onclick="swapToVideo('{{ p.video_url }}', this)">
+                        <i class="fa-solid fa-play"></i>
+                        <div class="mf-play-ring"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════ INFO ══════ -->
+        <div class="col-md-6 mf-fade-right">
+            <div class="mf-info-section" style="position: sticky; top: 100px;">
+                
+                <div class="mf-trust-row">
+                    <span class="mf-trust-pill mf-trust-authentic">
+                        <i class="fa-solid fa-certificate"></i> Genuine
+                    </span>
+                    {% if p.in_stock %}
+                        <span class="mf-trust-pill mf-trust-stock">
+                            <i class="fa-solid fa-bolt-lightning"></i> In Stock
+                        </span>
+                    {% else %}
+                        <span class="mf-trust-pill mf-trust-soldout">
+                            <i class="fa-solid fa-circle-xmark"></i> Sold Out
+                        </span>
+                    {% endif %}
+                </div>
+
+                <h1 class="mf-product-title">{{ p.title }}</h1>
+                
+                <div class="mf-rating-row">
+                    <div class="mf-stars">
+                        {% set rating = (p.rating if p.rating else '4.9')|float %}
+                        {% for i in range(5) %}
+                            {% if i < rating|int %}
+                                <i class="fa-solid fa-star"></i>
+                            {% elif i < rating %}
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star empty"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="mf-rating-num">{{ p.rating if p.rating else '4.9' }}</span>
+                    <span class="mf-rating-sep"></span>
+                    <span class="mf-sold-count">
+                        <i class="fa-solid fa-bag-shopping me-1" style="font-size:0.7rem;"></i>
+                        {{ p.sold_count if p.sold_count else '120+' }} sold
+                    </span>
+                </div>
+
+                <div class="mf-price-block">
+                    <div class="d-flex align-items-end gap-3 flex-wrap">
+                        <span class="mf-price-main">
+                            <span class="mf-price-currency">৳</span><span id="livePrice">{{ p.price }}</span>
+                        </span>
+                        {% if p.del_price and p.del_price|int > p.price|int %}
+                            <del class="mf-price-old">৳{{ p.del_price }}</del>
+                            <span class="mf-price-save">
+                                <i class="fa-solid fa-arrow-down" style="font-size:0.6rem;"></i>
+                                Save ৳{{ p.del_price|int - p.price|int }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if p.variants %}
+                <div class="mf-variant-section">
+                    <div class="mf-section-label">Select Option</div>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for v in p.variants %}
+                        <div>
+                            <input type="radio" class="btn-check mf-variant-input" name="product_variant" id="v_{{ loop.index }}" 
+                                   value="{{ v.name }}" data-price="{{ v.price }}" {% if loop.first %}checked{% endif %}>
+                            <label class="mf-variant-label" for="v_{{ loop.index }}"><span>{{ v.name }}</span></label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="mf-desc-block">
+                    <div class="mf-section-label" style="margin-bottom: 14px;">Details</div>
+                    <div class="mf-desc-text">
+                        {% if p.description %}{{ p.description | safe }}{% else %}
+                        Premium quality product crafted for excellence. This authentic {{ p.title }} offers unmatched durability and modern design elements. Every detail has been carefully considered to deliver the best experience.
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mf-trust-signals">
+                    <div class="mf-trust-item">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <span>Fast Delivery</span>
+                    </div>
+                    <div class="mf-trust-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Genuine Product</span>
+                    </div>
+                    <div class="mf-trust-item">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Easy Return</span>
+                    </div>
+                    <div class="mf-trust-item">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Secure Payment</span>
+                    </div>
+                </div>
+
+                <div class="mf-actions-desktop d-none d-md-block">
+                    {% if p.in_stock %}
+                        <div class="row g-3 mb-3">
+                            <div class="col-8">
+                                <button onclick="handleOrder('checkout')" class="mf-btn-buy">
+                                    <span>Buy Now</span>
+                                    <span class="mf-buy-icon"><i class="fa-solid fa-bolt"></i></span>
+                                </button>
+                            </div>
+                            <div class="col-4">
+                                <button onclick="handleOrder('cart')" class="mf-btn-cart">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/8801400461284?text={{ 'Order: ' + p.title | urlencode }}" class="mf-btn-whatsapp" target="_blank" rel="noopener noreferrer">
+                            <span class="mf-wa-icon"><i class="fa-brands fa-whatsapp"></i></span>
+                            <span>Order via WhatsApp</span>
+                        </a>
+                    {% else %}
+                        <button class="mf-btn-unavailable" disabled>
+                            <i class="fa-solid fa-clock me-2"></i>Out of Stock
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Bottom Bar -->
+<div class="mf-mobile-bar d-md-none">
+    {% if p.in_stock %}
+    <div class="mf-mobile-bar-inner">
+        <a href="https://wa.me/8801400461284?text={{ 'Order: ' + p.title | urlencode }}" class="mf-mobile-icon-btn wa-btn" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <button onclick="handleOrder('cart')" class="mf-mobile-icon-btn cart-btn-m" aria-label="Add to Cart">
+            <i class="fa-solid fa-cart-plus"></i>
+        </button>
+        <button onclick="handleOrder('checkout')" class="mf-mobile-buy">
+            <span>Buy Now</span>
+        </button>
+    </div>
+    {% else %}
+    <div class="mf-mobile-bar-inner">
+        <button class="mf-mobile-buy unavailable" disabled>
+            <span>Unavailable</span>
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    var revealObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (e.isIntersecting) {
+                e.target.classList.add('mf-visible');
+                revealObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.mf-fade-up, .mf-fade-left, .mf-fade-right').forEach(function(el) { revealObs.observe(el); });
+
+    var wrapper = document.getElementById('mainMediaWrapper');
+    var priceEl = document.getElementById('livePrice');
+
+    function swapToImage(src, el) {
+        wrapper.innerHTML = '<img src="' + src + '" alt="Product Image" class="mf-img-entering">';
+        updateThumb(el);
+    }
+
+    function swapToVideo(url, el) {
+        var videoId = url.includes('v=') ? url.split('v=')[1].split('&')[0] : url.split('/').pop();
+        wrapper.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen style="width:100%;height:100%;border:none;border-radius:var(--mf-radius-md);"></iframe>';
+        updateThumb(el);
+    }
+
+    function updateThumb(el) {
+        document.querySelectorAll('.mf-thumb').forEach(function(t) { t.classList.remove('active'); });
+        el.classList.add('active');
+    }
+
+    document.querySelectorAll('input[name="product_variant"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            var newPrice = this.getAttribute('data-price');
+            if (priceEl && newPrice) {
+                priceEl.textContent = newPrice;
+                priceEl.classList.remove('mf-price-pop');
+                void priceEl.offsetWidth;
+                priceEl.classList.add('mf-price-pop');
+            }
+        });
+    });
+
+    function handleOrder(action) {
+        var selectedVariant = document.querySelector('input[name="product_variant"]:checked');
+        var variantValue = selectedVariant ? selectedVariant.value : "";
+        var url = '/add_to_cart/{{ p._id }}?variant=' + encodeURIComponent(variantValue);
+        if (action === 'checkout') url += '&next=checkout';
+        window.location.href = url;
+    }
+
+    document.querySelectorAll('.mf-btn-buy, .mf-mobile-buy, .mf-btn-cart').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            var ripple = document.createElement('span');
+            var rect = this.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height);
+            ripple.style.cssText = 'position:absolute;border-radius:50%;width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size/2) + 'px;top:' + (e.clientY - rect.top - size/2) + 'px;background:rgba(255,255,255,0.25);transform:scale(0);opacity:1;transition:transform 0.5s ease,opacity 0.5s ease;pointer-events:none;z-index:0';
+            this.appendChild(ripple);
+            requestAnimationFrame(function() { ripple.style.transform = 'scale(2)'; ripple.style.opacity = '0'; });
+            setTimeout(function() { ripple.remove(); }, 600);
+        });
+    });
+</script>
+{% endblock %}

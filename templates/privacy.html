@@ -1,0 +1,543 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Dancing+Script:wght@500;600;700&display=swap');
+
+    :root {
+        --mf-purple: #7c3aed;
+        --mf-purple-light: #8b5cf6;
+        --mf-purple-pale: #a78bfa;
+        --mf-purple-muted: #c4b5fd;
+        --mf-purple-faint: #ede9fe;
+        --mf-purple-ghost: #f5f3ff;
+        --mf-violet: #6d28d9;
+        --mf-plum: #5b21b6;
+        --mf-dark: #1e1033;
+        --mf-dark-soft: #2d1b4e;
+        --mf-surface: #fafafa;
+        --mf-border: rgba(124, 58, 237, 0.06);
+        --mf-border-soft: rgba(0, 0, 0, 0.05);
+        --mf-shadow-sm: 0 2px 8px rgba(124,58,237,0.04), 0 1px 3px rgba(0,0,0,0.03);
+        --mf-shadow-md: 0 8px 24px rgba(124,58,237,0.06), 0 2px 6px rgba(0,0,0,0.04);
+        --mf-shadow-lg: 0 20px 48px rgba(124,58,237,0.08), 0 8px 16px rgba(0,0,0,0.04);
+        --mf-shadow-xl: 0 32px 64px rgba(124,58,237,0.12), 0 12px 24px rgba(0,0,0,0.06);
+        --mf-radius-sm: 10px;
+        --mf-radius-md: 14px;
+        --mf-radius-lg: 20px;
+        --mf-radius-xl: 28px;
+        --mf-radius-full: 9999px;
+        --mf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        --mf-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --mf-transition: 0.4s var(--mf-ease);
+        --mf-transition-fast: 0.2s var(--mf-ease);
+        --mf-transition-bounce: 0.6s var(--mf-ease-bounce);
+    }
+
+    /* ═══════════════ PAGE HEADER ═══════════════ */
+    .mf-policy-hero {
+        text-align: center; margin-bottom: 56px;
+        position: relative;
+    }
+    .mf-policy-hero::after {
+        content: ''; position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%);
+        width: 500px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--mf-border-soft), transparent);
+    }
+    .mf-hero-tag {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--mf-purple); padding: 7px 18px;
+        background: var(--mf-purple-ghost);
+        border-radius: var(--mf-radius-full);
+        border: 1px solid rgba(124,58,237,0.08);
+        margin-bottom: 20px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-hero-tag-sq {
+        width: 5px; height: 5px; border-radius: 1.5px;
+        background: var(--mf-purple); transform: rotate(45deg);
+    }
+    .mf-hero-tag i { font-size: 0.55rem; }
+    .mf-policy-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.6rem; font-weight: 600;
+        color: var(--mf-dark); margin: 0 0 12px; line-height: 1.15;
+    }
+    .mf-gradient-text {
+        background: linear-gradient(135deg, var(--mf-purple) 0%, var(--mf-violet) 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .mf-hero-meta {
+        font-size: 0.75rem; color: #94a3b8; font-weight: 600;
+        letter-spacing: 0.06em;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-hero-meta i { color: var(--mf-purple); }
+    .mf-hero-divider {
+        display: flex; align-items: center; justify-content: center;
+        gap: 12px; margin-top: 24px;
+    }
+    .mf-hero-divider-line {
+        width: 40px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--mf-border-soft));
+    }
+    .mf-hero-divider-line:last-child {
+        background: linear-gradient(90deg, var(--mf-border-soft), transparent);
+    }
+    .mf-hero-divider-sq {
+        width: 8px; height: 8px; border-radius: 2px;
+        background: var(--mf-purple); transform: rotate(45deg); opacity: 0.5;
+    }
+
+    /* ═══════════════ POLICY CARD ═══════════════ */
+    .mf-policy-card {
+        background: white; border-radius: var(--mf-radius-xl);
+        border: 1px solid var(--mf-border-soft);
+        box-shadow: var(--mf-shadow-md);
+        padding: 48px; position: relative; overflow: hidden;
+    }
+    .mf-policy-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--mf-purple), var(--mf-violet), var(--mf-purple-light), var(--mf-purple));
+        background-size: 200% 100%;
+        animation: mfBarShimmer 6s linear infinite;
+    }
+    /* Subtle dot pattern */
+    .mf-policy-card::after {
+        content: ''; position: absolute; inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(124,58,237,0.008) 1px, transparent 0);
+        background-size: 24px 24px;
+        pointer-events: none;
+    }
+    @keyframes mfBarShimmer {
+        0% { background-position: 0% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    /* ═══════════════ SECTIONS ═══════════════ */
+    .mf-policy-section {
+        margin-bottom: 48px; padding-bottom: 48px;
+        border-bottom: 1px solid var(--mf-border-soft);
+        position: relative;
+    }
+    .mf-policy-section:last-child {
+        margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+    }
+
+    .mf-section-header {
+        display: flex; align-items: center; gap: 18px;
+        margin-bottom: 20px;
+    }
+    .mf-section-icon {
+        width: 52px; height: 52px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.15rem; flex-shrink: 0;
+        transition: var(--mf-transition-bounce);
+        position: relative;
+        background: var(--mf-purple-ghost);
+        color: var(--mf-purple);
+        border: 1px solid rgba(124,58,237,0.06);
+    }
+    .mf-policy-section:hover .mf-section-icon {
+        transform: rotate(-8deg) scale(1.08);
+        box-shadow: 0 4px 14px rgba(124,58,237,0.1);
+    }
+
+    .mf-section-num {
+        position: absolute; top: -4px; right: -4px;
+        width: 18px; height: 18px; border-radius: 50%;
+        background: var(--mf-dark); color: white;
+        font-size: 0.55rem; font-weight: 900;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .mf-section-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.25rem; font-weight: 600;
+        color: var(--mf-dark); margin: 0; line-height: 1.3;
+    }
+
+    .mf-section-text {
+        font-size: 0.92rem; color: #64748b;
+        line-height: 1.85; margin: 0;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-section-text strong { color: var(--mf-dark); font-weight: 700; }
+
+    /* Custom List */
+    .mf-check-list {
+        list-style: none; padding: 0; margin: 20px 0 0;
+        display: flex; flex-direction: column; gap: 14px;
+    }
+    .mf-check-item {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 16px; background: var(--mf-surface);
+        border-radius: var(--mf-radius-md);
+        border: 1px solid var(--mf-border-soft);
+        transition: var(--mf-transition-fast);
+    }
+    .mf-check-item:hover {
+        border-color: rgba(124,58,237,0.12);
+        transform: translateX(4px);
+    }
+    .mf-check-icon {
+        width: 28px; height: 28px; border-radius: 8px;
+        background: linear-gradient(135deg, var(--mf-purple), var(--mf-violet));
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 0.6rem; flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .mf-check-label {
+        font-size: 0.88rem; color: #475569; line-height: 1.6; margin: 0;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-check-label strong { color: var(--mf-dark); }
+
+    /* Usage Grid */
+    .mf-usage-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+        margin-top: 20px;
+    }
+    .mf-usage-card {
+        display: flex; align-items: center; gap: 14px;
+        padding: 20px; background: var(--mf-surface);
+        border-radius: var(--mf-radius-md);
+        border: 1px solid var(--mf-border-soft);
+        transition: var(--mf-transition);
+    }
+    .mf-usage-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--mf-shadow-md);
+        border-color: rgba(124,58,237,0.12);
+    }
+    .mf-usage-icon {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0;
+        transition: var(--mf-transition-bounce);
+        background: var(--mf-purple-ghost);
+        color: var(--mf-purple);
+    }
+    .mf-usage-card:hover .mf-usage-icon { transform: rotate(-8deg) scale(1.1); }
+    .mf-usage-label {
+        font-size: 0.85rem; font-weight: 700; color: var(--mf-dark);
+        line-height: 1.4;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Highlight Box */
+    .mf-highlight-box {
+        margin-top: 20px; padding: 20px 24px;
+        background: rgba(124,58,237,0.03);
+        border: 1px solid rgba(124,58,237,0.08);
+        border-radius: var(--mf-radius-md);
+        border-left: 4px solid var(--mf-purple);
+        position: relative;
+    }
+    .mf-highlight-box p {
+        font-size: 0.9rem; color: #475569;
+        line-height: 1.7; margin: 0;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-highlight-box strong { color: var(--mf-violet); }
+    .mf-highlight-icon {
+        position: absolute; top: -12px; right: 20px;
+        width: 24px; height: 24px; border-radius: 50%;
+        background: white; border: 1px solid rgba(124,58,237,0.1);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--mf-purple); font-size: 0.6rem;
+        box-shadow: var(--mf-shadow-sm);
+    }
+
+    /* Contact Row */
+    .mf-contact-row {
+        display: flex; gap: 14px; margin-top: 20px; flex-wrap: wrap;
+    }
+    .mf-contact-chip {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 14px 22px; background: var(--mf-surface);
+        border-radius: var(--mf-radius-md);
+        border: 1px solid var(--mf-border-soft);
+        text-decoration: none; color: var(--mf-dark);
+        font-size: 0.85rem; font-weight: 700;
+        transition: var(--mf-transition);
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-contact-chip:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 3px;
+    }
+    .mf-contact-chip i {
+        width: 32px; height: 32px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.8rem;
+        background: var(--mf-purple-ghost);
+        color: var(--mf-purple);
+    }
+    .mf-contact-chip:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--mf-shadow-md);
+        border-color: rgba(124,58,237,0.15);
+        color: var(--mf-purple);
+    }
+
+    /* ═══════════════ BACK BUTTON ═══════════════ */
+    .mf-back-wrap {
+        text-align: center; margin-top: 56px;
+    }
+    .mf-back-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        height: 52px; padding: 0 36px;
+        border: 2px solid var(--mf-border-soft); border-radius: var(--mf-radius-full);
+        background: white; color: var(--mf-dark);
+        font-size: 0.88rem; font-weight: 700;
+        text-decoration: none; transition: var(--mf-transition);
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-back-btn i {
+        transition: var(--mf-transition);
+    }
+    .mf-back-btn:hover {
+        border-color: var(--mf-purple); color: var(--mf-purple);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(124,58,237,0.1);
+    }
+    .mf-back-btn:hover i { transform: translateX(-4px); }
+    .mf-back-btn:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 3px;
+    }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .mf-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s var(--mf-ease);
+    }
+    .mf-reveal.mf-visible { opacity: 1; transform: translateY(0); }
+    .mf-stagger {
+        opacity: 0; transform: translateY(24px);
+        transition: opacity 0.6s ease, transform 0.6s var(--mf-ease);
+    }
+    .mf-stagger.mf-visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════ REDUCED MOTION ═══════════════ */
+    @media (prefers-reduced-motion: reduce) {
+        .mf-policy-card::before { animation: none !important; }
+        .mf-reveal, .mf-stagger { opacity: 1; transform: none; transition: none; }
+        .mf-check-item:hover, .mf-usage-card:hover, .mf-contact-chip:hover,
+        .mf-back-btn:hover, .mf-section-icon { transform: none !important; }
+    }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .mf-policy-title { font-size: 2.2rem; }
+        .mf-policy-card { padding: 40px 32px; }
+    }
+
+    @media (max-width: 767px) {
+        .mf-policy-hero { margin-bottom: 40px; }
+        .mf-policy-hero::after { bottom: -20px; width: 300px; }
+        .mf-policy-title { font-size: 1.8rem; }
+        .mf-policy-card { padding: 28px 22px; border-radius: var(--mf-radius-lg); }
+        .mf-section-header { gap: 14px; }
+        .mf-section-icon { width: 46px; height: 46px; font-size: 1rem; border-radius: 14px; }
+        .mf-section-num { width: 16px; height: 16px; font-size: 0.5rem; }
+        .mf-section-title { font-size: 1.1rem; }
+        .mf-section-text { font-size: 0.85rem; }
+        .mf-check-item { padding: 14px; gap: 12px; }
+        .mf-check-label { font-size: 0.82rem; }
+        .mf-usage-grid { grid-template-columns: 1fr; }
+        .mf-policy-section { margin-bottom: 36px; padding-bottom: 36px; }
+        .mf-contact-row { flex-direction: column; }
+        .mf-contact-chip { justify-content: center; }
+    }
+
+    @media (max-width: 400px) {
+        .mf-check-icon { width: 24px; height: 24px; font-size: 0.5rem; border-radius: 6px; }
+        .mf-usage-icon { width: 38px; height: 38px; font-size: 0.85rem; }
+    }
+</style>
+
+<div class="container py-4 py-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <!-- Header -->
+            <div class="mf-policy-hero mf-reveal">
+                <div class="mf-hero-tag">
+                    <span class="mf-hero-tag-sq"></span>
+                    <span>Legal</span>
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h1 class="mf-policy-title">Privacy <span class="mf-gradient-text">Policy</span></h1>
+                <div class="mf-hero-meta">
+                    <i class="fa-regular fa-clock"></i>
+                    Last Updated: April 2025
+                </div>
+                <div class="mf-hero-divider">
+                    <div class="mf-hero-divider-line"></div>
+                    <div class="mf-hero-divider-sq"></div>
+                    <div class="mf-hero-divider-line"></div>
+                </div>
+            </div>
+
+            <!-- Card -->
+            <div class="mf-policy-card mf-reveal">
+
+                <!-- Section 1 -->
+                <div class="mf-policy-section mf-stagger" style="--d: 0;">
+                    <div class="mf-section-header">
+                        <div class="mf-section-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span class="mf-section-num">1</span>
+                        </div>
+                        <h4 class="mf-section-title">Introduction</h4>
+                    </div>
+                    <p class="mf-section-text">
+                        Welcome to <strong>Modest Fashionista</strong>. We value your privacy and are committed to protecting your personal data. This policy explains how we collect, use, and safeguard your information when you visit our website and purchase our products. Your trust is our priority.
+                    </p>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="mf-policy-section mf-stagger" style="--d: 1;">
+                    <div class="mf-section-header">
+                        <div class="mf-section-icon">
+                            <i class="fa-solid fa-database"></i>
+                            <span class="mf-section-num">2</span>
+                        </div>
+                        <h4 class="mf-section-title">Information Collection</h4>
+                    </div>
+                    <p class="mf-section-text">
+                        When you place an order or contact us, we collect specific information to ensure a seamless delivery experience:
+                    </p>
+                    <ul class="mf-check-list">
+                        <li class="mf-check-item">
+                            <div class="mf-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="mf-check-label"><strong>Identity Data:</strong> Full name and contact number for order verification.</p>
+                        </li>
+                        <li class="mf-check-item">
+                            <div class="mf-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="mf-check-label"><strong>Logistic Data:</strong> Detailed delivery address for accurate shipping.</p>
+                        </li>
+                        <li class="mf-check-item">
+                            <div class="mf-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="mf-check-label"><strong>Order History:</strong> Details of purchased items and your unique Order ID.</p>
+                        </li>
+                        <li class="mf-check-item">
+                            <div class="mf-check-icon"><i class="fa-solid fa-check"></i></div>
+                            <p class="mf-check-label"><strong>Digital Footprint:</strong> Session cookies to maintain your shopping cart items.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="mf-policy-section mf-stagger" style="--d: 2;">
+                    <div class="mf-section-header">
+                        <div class="mf-section-icon">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span class="mf-section-num">3</span>
+                        </div>
+                        <h4 class="mf-section-title">Usage of Data</h4>
+                    </div>
+                    <p class="mf-section-text">
+                        Your data is strictly used for operational purposes within Modest Fashionista:
+                    </p>
+                    <div class="mf-usage-grid">
+                        <div class="mf-usage-card">
+                            <div class="mf-usage-icon">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <span class="mf-usage-label">Order Fulfillment & Logistics</span>
+                        </div>
+                        <div class="mf-usage-card">
+                            <div class="mf-usage-icon">
+                                <i class="fa-solid fa-headset"></i>
+                            </div>
+                            <span class="mf-usage-label">Customer Support & Updates</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="mf-policy-section mf-stagger" style="--d: 3;">
+                    <div class="mf-section-header">
+                        <div class="mf-section-icon">
+                            <i class="fa-solid fa-lock"></i>
+                            <span class="mf-section-num">4</span>
+                        </div>
+                        <h4 class="mf-section-title">Data Security</h4>
+                    </div>
+                    <div class="mf-highlight-box">
+                        <div class="mf-highlight-icon"><i class="fa-solid fa-shield-check"></i></div>
+                        <p>
+                            We implement industry-standard encryption and security measures. <strong>Modest Fashionista does not sell, trade, or rent</strong> your personal identification information to third parties or marketing agencies.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="mf-policy-section mf-stagger" style="--d: 4;">
+                    <div class="mf-section-header">
+                        <div class="mf-section-icon">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            <span class="mf-section-num">5</span>
+                        </div>
+                        <h4 class="mf-section-title">Get In Touch</h4>
+                    </div>
+                    <p class="mf-section-text">
+                        If you have questions regarding your data privacy, our team is ready to assist you:
+                    </p>
+                    <div class="mf-contact-row">
+                        <a href="/contact" class="mf-contact-chip">
+                            <i class="fa-solid fa-headset"></i>
+                            <span>Contact Page</span>
+                        </a>
+                        <a href="mailto:ponnoSebaa@gmail.com" class="mf-contact-chip">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>ponnoSebaa@gmail.com</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Back Button -->
+            <div class="mf-back-wrap mf-reveal">
+                <a href="/" class="mf-back-btn">
+                    <i class="fa-solid fa-arrow-left-long"></i>
+                    <span>Return to Shopping</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var revealObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (e.isIntersecting) {
+                e.target.classList.add('mf-visible');
+                revealObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.mf-reveal').forEach(function(el) { revealObs.observe(el); });
+
+    var staggerObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (e.isIntersecting) {
+                var delay = parseInt(getComputedStyle(e.target).getPropertyValue('--d') || '0');
+                e.target.style.transitionDelay = (delay * 0.12) + 's';
+                e.target.classList.add('mf-visible');
+                staggerObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.mf-stagger').forEach(function(el) { staggerObs.observe(el); });
+</script>
+{% endblock %}

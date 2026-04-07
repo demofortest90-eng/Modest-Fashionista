@@ -1,0 +1,997 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Dancing+Script:wght@500;600;700&display=swap');
+
+    :root {
+        --mf-purple: #7c3aed;
+        --mf-purple-light: #8b5cf6;
+        --mf-purple-pale: #a78bfa;
+        --mf-purple-muted: #c4b5fd;
+        --mf-purple-faint: #ede9fe;
+        --mf-purple-ghost: #f5f3ff;
+        --mf-violet: #6d28d9;
+        --mf-plum: #5b21b6;
+        --mf-dark: #1e1033;
+        --mf-dark-soft: #2d1b4e;
+        --mf-surface: #fafafa;
+        --mf-border: rgba(124, 58, 237, 0.06);
+        --mf-border-soft: rgba(0, 0, 0, 0.05);
+        --mf-shadow-sm: 0 2px 8px rgba(124,58,237,0.04), 0 1px 3px rgba(0,0,0,0.03);
+        --mf-shadow-md: 0 8px 24px rgba(124,58,237,0.06), 0 2px 6px rgba(0,0,0,0.04);
+        --mf-shadow-lg: 0 20px 48px rgba(124,58,237,0.08), 0 8px 16px rgba(0,0,0,0.04);
+        --mf-shadow-xl: 0 32px 64px rgba(124,58,237,0.12), 0 12px 24px rgba(0,0,0,0.06);
+        --mf-radius-sm: 10px;
+        --mf-radius-md: 14px;
+        --mf-radius-lg: 20px;
+        --mf-radius-xl: 28px;
+        --mf-radius-full: 9999px;
+        --mf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        --mf-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --mf-transition: 0.4s var(--mf-ease);
+        --mf-transition-fast: 0.2s var(--mf-ease);
+        --mf-transition-bounce: 0.6s var(--mf-ease-bounce);
+    }
+
+    /* ═══════════════ HERO ═══════════════ */
+    .mf-contact-hero {
+        position: relative;
+        background: var(--mf-dark);
+        padding: 100px 0 140px;
+        overflow: hidden;
+    }
+    .mf-hero-bg {
+        position: absolute; inset: 0;
+        background: linear-gradient(145deg, var(--mf-plum) 0%, var(--mf-dark) 40%, rgba(124,58,237,0.15) 100%);
+    }
+    /* Dot grid — like the brand image */
+    .mf-hero-dots {
+        position: absolute; inset: 0; opacity: 0.06;
+        background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+        background-size: 28px 28px;
+    }
+    /* Square grid overlay — matching brand geo pattern */
+    .mf-hero-squares {
+        position: absolute; inset: 0; opacity: 0.025;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+    .mf-hero-glow {
+        position: absolute; border-radius: 50%;
+        filter: blur(120px); pointer-events: none;
+    }
+    .mf-hero-glow-1 {
+        width: 550px; height: 550px;
+        background: var(--mf-purple); top: -280px; right: -80px; opacity: 0.15;
+    }
+    .mf-hero-glow-2 {
+        width: 400px; height: 400px;
+        background: var(--mf-purple-light); bottom: -200px; left: 5%; opacity: 0.08;
+    }
+    .mf-hero-glow-3 {
+        width: 250px; height: 250px;
+        background: var(--mf-purple-pale); top: 20%; left: 50%; opacity: 0.06;
+    }
+    .mf-hero-shine {
+        position: absolute; inset: 0;
+        background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.02) 43%, rgba(255,255,255,0.05) 48%, rgba(255,255,255,0.02) 53%, transparent 58%);
+        background-size: 200% 100%;
+        animation: mfShine 6s ease-in-out infinite;
+    }
+    @keyframes mfShine {
+        0%, 100% { background-position: 200% 0; }
+        50% { background-position: -100% 0; }
+    }
+
+    /* Floating geometric shapes — squares and circles from brand image */
+    .mf-hero-shape {
+        position: absolute; z-index: 1;
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+    .mf-shape-circle-1 { width: 80px; height: 80px; border-radius: 50%; top: 40px; left: 6%; animation: mfFloat1 9s ease-in-out infinite; }
+    .mf-shape-circle-2 { width: 45px; height: 45px; border-radius: 50%; bottom: 50px; right: 12%; animation: mfFloat2 9s ease-in-out infinite; }
+    .mf-shape-square-1 { width: 40px; height: 40px; top: 25%; right: 30%; animation: mfFloat3 9s ease-in-out infinite; transform: rotate(15deg); }
+    .mf-shape-square-2 { width: 24px; height: 24px; bottom: 30%; left: 20%; animation: mfFloat1 9s ease-in-out infinite; animation-delay: -4s; transform: rotate(-20deg); }
+    .mf-shape-dot-1 { width: 10px; height: 10px; border-radius: 50%; background: rgba(124,58,237,0.15); border: none; top: 60%; right: 22%; animation: mfFloat2 9s ease-in-out infinite; animation-delay: -2s; }
+    .mf-shape-dot-2 { width: 7px; height: 7px; border-radius: 50%; background: rgba(124,58,237,0.1); border: none; top: 15%; left: 35%; animation: mfFloat3 9s ease-in-out infinite; animation-delay: -6s; }
+    @keyframes mfFloat1 {
+        0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+        50% { transform: translateY(-16px) rotate(8deg); opacity: 0.7; }
+    }
+    @keyframes mfFloat2 {
+        0%, 100% { transform: translateY(0); opacity: 0.25; }
+        50% { transform: translateY(-12px); opacity: 0.65; }
+    }
+    @keyframes mfFloat3 {
+        0%, 100% { transform: translateY(0) rotate(15deg); opacity: 0.2; }
+        50% { transform: translateY(-10px) rotate(25deg); opacity: 0.55; }
+    }
+
+    .mf-hero-content {
+        position: relative; z-index: 2; text-align: center;
+    }
+    .mf-hero-brand {
+        font-family: 'Dancing Script', cursive;
+        font-size: 2.4rem; font-weight: 700;
+        color: var(--mf-purple-pale); margin-bottom: 4px;
+        opacity: 0.8;
+    }
+    .mf-hero-label {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.25em; text-transform: uppercase;
+        color: var(--mf-purple-muted); margin-bottom: 20px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-hero-label-line {
+        width: 30px; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--mf-purple-muted));
+    }
+    .mf-hero-label-line:last-child {
+        background: linear-gradient(90deg, var(--mf-purple-muted), transparent);
+    }
+    .mf-hero-label-dot {
+        width: 4px; height: 4px; border-radius: 50%;
+        background: var(--mf-purple);
+    }
+    .mf-hero-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 3rem; font-weight: 600;
+        color: white; margin: 0 0 16px; line-height: 1.15;
+    }
+    .mf-hero-desc {
+        font-size: 1.02rem; color: rgba(255,255,255,0.45);
+        line-height: 1.75; max-width: 540px; margin: 0 auto;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-hero-desc strong { color: rgba(255,255,255,0.75); }
+    .mf-hero-divider {
+        display: flex; align-items: center; justify-content: center;
+        gap: 14px; margin-top: 32px;
+    }
+    .mf-hero-divider-line {
+        width: 60px; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08));
+    }
+    .mf-hero-divider-line:last-child {
+        background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
+    }
+    .mf-hero-divider-sq {
+        width: 8px; height: 8px; border-radius: 2px;
+        border: 1.5px solid var(--mf-purple-pale);
+        transform: rotate(45deg); opacity: 0.5;
+    }
+
+    /* ═══════════════ CONTACT CARD ═══════════════ */
+    .mf-contact-card {
+        background: white;
+        border-radius: var(--mf-radius-xl);
+        border: 1px solid var(--mf-border-soft);
+        box-shadow: var(--mf-shadow-xl);
+        overflow: hidden;
+        position: relative; z-index: 10;
+        margin-top: -80px;
+    }
+
+    /* Info Panel */
+    .mf-info-panel {
+        padding: 48px 40px;
+        position: relative;
+    }
+    .mf-info-panel::before {
+        content: ''; position: absolute; right: 0; top: 8%; bottom: 8%;
+        width: 1px;
+        background: linear-gradient(180deg, transparent, var(--mf-border), rgba(124,58,237,0.08), var(--mf-border), transparent);
+    }
+    /* Subtle geo pattern in info panel bg */
+    .mf-info-panel::after {
+        content: ''; position: absolute; inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(124,58,237,0.015) 1px, transparent 0);
+        background-size: 22px 22px;
+        pointer-events: none;
+    }
+
+    .mf-info-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.5rem; font-weight: 600;
+        color: var(--mf-dark); margin: 0 0 8px;
+        position: relative;
+    }
+    .mf-info-desc {
+        font-size: 0.88rem; color: #94a3b8;
+        line-height: 1.7; margin: 0 0 36px;
+        font-family: 'Inter', sans-serif;
+        position: relative;
+    }
+
+    .mf-info-item {
+        display: flex; align-items: center; gap: 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--mf-border-soft);
+        transition: var(--mf-transition-fast);
+        position: relative;
+    }
+    .mf-info-item:last-of-type { border-bottom: none; }
+    .mf-info-item:hover { padding-left: 10px; }
+
+    .mf-info-icon {
+        width: 52px; height: 52px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.05rem; flex-shrink: 0;
+        transition: var(--mf-transition-bounce);
+        background: var(--mf-purple-ghost);
+        color: var(--mf-purple);
+        border: 1px solid rgba(124,58,237,0.06);
+    }
+    .mf-info-item:hover .mf-info-icon {
+        transform: rotate(-8deg) scale(1.08);
+        background: rgba(124,58,237,0.08);
+        box-shadow: 0 4px 14px rgba(124,58,237,0.12);
+    }
+
+    .mf-info-label {
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.16em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 3px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-info-value {
+        font-size: 0.92rem; font-weight: 700; color: var(--mf-dark);
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-info-value a {
+        color: var(--mf-dark); text-decoration: none;
+        transition: var(--mf-transition-fast);
+    }
+    .mf-info-value a:hover { color: var(--mf-purple); }
+    .mf-info-value a:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 3px; border-radius: 4px;
+    }
+
+    /* Social Links */
+    .mf-social-section {
+        margin-top: 36px; padding-top: 28px;
+        border-top: 1px solid var(--mf-border-soft);
+        position: relative;
+    }
+    .mf-social-label {
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 16px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-social-btn {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--mf-surface);
+        border: 1px solid var(--mf-border-soft);
+        color: #94a3b8; text-decoration: none;
+        font-size: 0.95rem; transition: var(--mf-transition);
+        margin-right: 10px;
+    }
+    .mf-social-btn:hover {
+        transform: translateY(-4px) rotate(-5deg);
+        box-shadow: var(--mf-shadow-md);
+        color: white; border-color: transparent;
+    }
+    .mf-social-btn:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 3px;
+    }
+    .mf-social-btn.fb:hover { background: #1877f2; }
+    .mf-social-btn.wa:hover { background: linear-gradient(135deg, #25d366, #128c7e); }
+    .mf-social-btn.ig:hover { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .mf-social-btn.tk:hover { background: #010101; }
+
+    /* ═══════════════ FORM PANEL ═══════════════ */
+    .mf-form-panel {
+        padding: 48px 40px;
+        background: white;
+        position: relative;
+    }
+    .mf-form-panel::before {
+        content: ''; position: absolute; inset: 0;
+        background-image: radial-gradient(circle at 1px 1px, rgba(124,58,237,0.012) 1px, transparent 0);
+        background-size: 24px 24px;
+        pointer-events: none;
+    }
+    /* Purple accent bar at top */
+    .mf-form-panel::after {
+        content: ''; position: absolute; top: 0; left: 40px; right: 40px; height: 3px;
+        background: linear-gradient(90deg, var(--mf-purple), var(--mf-violet), var(--mf-purple-light));
+        border-radius: 0 0 3px 3px;
+        opacity: 0.6;
+    }
+
+    .mf-form-header {
+        position: relative; margin-bottom: 32px;
+    }
+    .mf-form-tag {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--mf-purple); margin-bottom: 10px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-form-tag-sq {
+        width: 6px; height: 6px; border-radius: 2px;
+        background: var(--mf-purple);
+        transform: rotate(45deg);
+    }
+    .mf-form-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem; font-weight: 600;
+        color: var(--mf-dark); margin: 0;
+    }
+
+    .mf-field-label {
+        display: block; font-size: 0.66rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: #94a3b8; margin-bottom: 10px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-input {
+        width: 100%; padding: 14px 18px;
+        background: var(--mf-surface);
+        border: 2px solid transparent;
+        border-radius: var(--mf-radius-sm);
+        font-size: 0.9rem; font-weight: 600; color: var(--mf-dark);
+        transition: var(--mf-transition);
+        outline: none;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-input::placeholder { color: #d1d5db; font-weight: 400; }
+    .mf-input:hover { border-color: rgba(124,58,237,0.12); background: white; }
+    .mf-input:focus {
+        border-color: var(--mf-purple);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+    }
+    .mf-input:focus-visible { outline: none; }
+    .mf-input.is-invalid {
+        border-color: #f87171;
+        box-shadow: 0 0 0 4px rgba(248,113,113,0.08);
+    }
+    .mf-input.is-invalid:focus {
+        border-color: #f87171;
+        box-shadow: 0 0 0 4px rgba(248,113,113,0.12);
+    }
+    textarea.mf-input { resize: none; min-height: 140px; line-height: 1.7; }
+
+    .mf-field-error {
+        font-size: 0.68rem; font-weight: 700; color: #f87171;
+        margin-top: 6px; display: none;
+        align-items: center; gap: 5px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-field-error i { font-size: 0.58rem; }
+    .mf-field-error.mf-show { display: flex; }
+
+    .mf-btn-send {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 56px;
+        border: none; border-radius: var(--mf-radius-md);
+        background: var(--mf-dark); color: white;
+        font-size: 0.88rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        cursor: pointer; transition: var(--mf-transition);
+        position: relative; overflow: hidden;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-btn-send::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--mf-purple), var(--mf-violet));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .mf-btn-send span, .mf-btn-send i { position: relative; z-index: 1; }
+    .mf-btn-send:hover::before { opacity: 1; }
+    .mf-btn-send:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(124,58,237,0.3);
+        color: white;
+    }
+    .mf-btn-send:active { transform: translateY(-1px); }
+    .mf-btn-send:disabled {
+        cursor: not-allowed; opacity: 0.75;
+        transform: none !important; box-shadow: none !important;
+    }
+    .mf-btn-send:disabled::before { opacity: 0 !important; }
+    .mf-btn-send:focus-visible {
+        outline: 2px solid var(--mf-purple);
+        outline-offset: 3px;
+    }
+    .mf-send-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(255,255,255,0.12);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.75rem;
+        transition: var(--mf-transition-bounce);
+    }
+    .mf-btn-send:hover .mf-send-icon { transform: translateX(4px) rotate(-12deg); }
+
+    .mf-btn-spinner {
+        width: 18px; height: 18px;
+        border: 2.5px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: mfSpin 0.6s linear infinite;
+        display: inline-block;
+    }
+    @keyframes mfSpin { to { transform: rotate(360deg); } }
+
+    /* ═══════════════ SUCCESS STATE ═══════════════ */
+    .mf-form-success {
+        display: none; text-align: center;
+        padding: 48px 20px; position: relative;
+    }
+    .mf-form-success.mf-show { display: block; }
+
+    .mf-success-ring {
+        width: 88px; height: 88px; border-radius: 50%;
+        background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(109,40,217,0.06));
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 28px; position: relative;
+    }
+    .mf-success-ring::before {
+        content: ''; position: absolute; inset: -8px;
+        border-radius: 50%;
+        border: 2px dashed rgba(124,58,237,0.12);
+        animation: mfRingSpin 14s linear infinite;
+    }
+    .mf-success-ring::after {
+        content: ''; position: absolute; inset: -16px;
+        border-radius: 50%;
+        border: 1px dotted rgba(124,58,237,0.06);
+        animation: mfRingSpin 20s linear infinite reverse;
+    }
+    @keyframes mfRingSpin { to { transform: rotate(360deg); } }
+
+    .mf-success-icon {
+        width: 48px; height: 48px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--mf-purple), var(--mf-violet));
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 1.15rem;
+        box-shadow: 0 8px 24px rgba(124,58,237,0.25);
+        animation: mfPopIn 0.5s var(--mf-ease-bounce) 0.2s both;
+    }
+    @keyframes mfPopIn {
+        0% { transform: scale(0); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .mf-success-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem; font-weight: 600;
+        color: var(--mf-dark); margin: 0 0 8px;
+        animation: mfFadeUp 0.5s ease 0.35s both;
+    }
+    .mf-success-desc {
+        font-size: 0.88rem; color: #94a3b8;
+        line-height: 1.75; margin: 0 0 32px;
+        max-width: 360px; margin-left: auto; margin-right: auto;
+        font-family: 'Inter', sans-serif;
+        animation: mfFadeUp 0.5s ease 0.45s both;
+    }
+    .mf-success-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 12px 28px;
+        background: white;
+        border: 1px solid var(--mf-border-soft);
+        border-radius: var(--mf-radius-sm);
+        font-size: 0.82rem; font-weight: 700;
+        color: var(--mf-dark); text-decoration: none;
+        cursor: pointer; transition: var(--mf-transition);
+        font-family: 'Inter', sans-serif;
+        animation: mfFadeUp 0.5s ease 0.55s both;
+        box-shadow: var(--mf-shadow-sm);
+    }
+    .mf-success-btn:hover {
+        border-color: var(--mf-purple);
+        color: var(--mf-purple);
+        transform: translateY(-2px);
+        box-shadow: var(--mf-shadow-md);
+    }
+    @keyframes mfFadeUp {
+        0% { opacity: 0; transform: translateY(14px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════ FAQ SECTION ═══════════════ */
+    .mf-faq-section { margin-top: 80px; }
+    .mf-faq-header { text-align: center; margin-bottom: 48px; }
+    .mf-faq-tag {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 0.58rem; font-weight: 800;
+        letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--mf-purple); padding: 7px 18px;
+        background: var(--mf-purple-ghost);
+        border-radius: var(--mf-radius-full);
+        border: 1px solid rgba(124,58,237,0.08);
+        margin-bottom: 18px;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-faq-tag-sq {
+        width: 5px; height: 5px; border-radius: 1.5px;
+        background: var(--mf-purple);
+        transform: rotate(45deg);
+    }
+    .mf-faq-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.8rem; font-weight: 600;
+        color: var(--mf-dark); margin: 0;
+    }
+
+    .mf-faq-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .mf-faq-item {
+        background: white; border-radius: var(--mf-radius-lg);
+        border: 1px solid var(--mf-border-soft);
+        padding: 28px; transition: var(--mf-transition);
+        box-shadow: var(--mf-shadow-sm);
+        position: relative; overflow: hidden;
+    }
+    .mf-faq-item::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--mf-purple), transparent);
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .mf-faq-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--mf-shadow-md);
+        border-color: rgba(124,58,237,0.12);
+    }
+    .mf-faq-item:hover::before { opacity: 1; }
+    .mf-faq-icon {
+        width: 44px; height: 44px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.95rem; margin-bottom: 16px;
+        background: var(--mf-purple-ghost);
+        color: var(--mf-purple);
+        border: 1px solid rgba(124,58,237,0.06);
+        transition: var(--mf-transition-bounce);
+    }
+    .mf-faq-item:hover .mf-faq-icon {
+        transform: scale(1.08);
+        box-shadow: 0 4px 12px rgba(124,58,237,0.1);
+    }
+    .mf-faq-q {
+        font-size: 0.92rem; font-weight: 700; color: var(--mf-dark);
+        margin: 0 0 8px; line-height: 1.5;
+        font-family: 'Inter', sans-serif;
+    }
+    .mf-faq-a {
+        font-size: 0.82rem; color: #94a3b8; line-height: 1.7;
+        margin: 0; font-family: 'Inter', sans-serif;
+    }
+
+    /* ═══════════════ TOAST ═══════════════ */
+    .mf-toast-container {
+        position: fixed; top: 24px; right: 24px; z-index: 9999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+    }
+    .mf-toast {
+        padding: 14px 20px; border-radius: var(--mf-radius-sm);
+        background: white; color: var(--mf-dark);
+        font-size: 0.82rem; font-weight: 700;
+        box-shadow: var(--mf-shadow-lg);
+        border-left: 4px solid var(--mf-purple);
+        display: flex; align-items: center; gap: 10px;
+        pointer-events: auto;
+        transform: translateX(120%);
+        transition: transform 0.5s var(--mf-ease), opacity 0.3s ease;
+        opacity: 0; font-family: 'Inter', sans-serif;
+    }
+    .mf-toast.mf-toast-show { transform: translateX(0); opacity: 1; }
+    .mf-toast-error { border-left-color: #ef4444; }
+    .mf-toast i { font-size: 1rem; flex-shrink: 0; }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .mf-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s var(--mf-ease);
+    }
+    .mf-reveal.mf-visible { opacity: 1; transform: translateY(0); }
+    .mf-reveal-delay-1 { transition-delay: 0.1s; }
+    .mf-reveal-delay-2 { transition-delay: 0.2s; }
+    .mf-reveal-delay-3 { transition-delay: 0.3s; }
+    .mf-reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ═══════════════ REDUCED MOTION ═══════════════ */
+    @media (prefers-reduced-motion: reduce) {
+        .mf-hero-shine, .mf-hero-shape, .mf-success-ring::before, .mf-success-ring::after { animation: none !important; }
+        .mf-reveal { opacity: 1; transform: none; transition: none; }
+        .mf-success-icon, .mf-success-title, .mf-success-desc, .mf-success-btn { animation: none !important; opacity: 1; transform: none; }
+        .mf-toast { transition: opacity 0.2s ease; transform: none; }
+        .mf-toast.mf-toast-show { opacity: 1; }
+        .mf-social-btn:hover, .mf-info-item:hover, .mf-faq-item:hover, .mf-btn-send:hover, .mf-faq-icon { transform: none !important; }
+    }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .mf-hero-title { font-size: 2.3rem; }
+        .mf-hero-brand { font-size: 2rem; }
+        .mf-contact-hero { padding: 70px 0 110px; }
+        .mf-contact-card { margin-top: -60px; }
+        .mf-info-panel { padding: 36px 28px; }
+        .mf-info-panel::before { display: none; }
+        .mf-form-panel { padding: 36px 28px; }
+        .mf-form-panel::after { left: 28px; right: 28px; }
+        .mf-faq-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 767px) {
+        .mf-contact-hero { padding: 52px 0 80px; }
+        .mf-hero-title { font-size: 1.75rem; }
+        .mf-hero-brand { font-size: 1.6rem; }
+        .mf-hero-desc { font-size: 0.88rem; }
+        .mf-hero-shape { display: none; }
+        .mf-contact-card { margin-top: -48px; border-radius: var(--mf-radius-lg); }
+        .mf-info-panel { padding: 28px 20px; }
+        .mf-form-panel { padding: 28px 20px; }
+        .mf-form-panel::after { left: 20px; right: 20px; }
+        .mf-info-title { font-size: 1.3rem; }
+        .mf-form-title { font-size: 1.2rem; }
+        .mf-info-item { gap: 14px; padding: 14px 0; }
+        .mf-info-icon { width: 46px; height: 46px; font-size: 1rem; border-radius: 12px; }
+        .mf-btn-send { height: 52px; font-size: 0.82rem; }
+        .mf-faq-section { margin-top: 56px; }
+        .mf-faq-title { font-size: 1.4rem; }
+        .mf-faq-item { padding: 22px; }
+        .mf-toast-container { top: 12px; right: 12px; left: 12px; }
+    }
+</style>
+
+<!-- Toast Container -->
+<div class="mf-toast-container" id="mfToastContainer"></div>
+
+<!-- Hero -->
+<div class="mf-contact-hero">
+    <div class="mf-hero-bg"></div>
+    <div class="mf-hero-dots"></div>
+    <div class="mf-hero-squares"></div>
+    <div class="mf-hero-glow mf-hero-glow-1"></div>
+    <div class="mf-hero-glow mf-hero-glow-2"></div>
+    <div class="mf-hero-glow mf-hero-glow-3"></div>
+    <div class="mf-hero-shine"></div>
+    <div class="mf-hero-shape mf-shape-circle-1"></div>
+    <div class="mf-hero-shape mf-shape-circle-2"></div>
+    <div class="mf-hero-shape mf-shape-square-1"></div>
+    <div class="mf-hero-shape mf-shape-square-2"></div>
+    <div class="mf-hero-shape mf-shape-dot-1"></div>
+    <div class="mf-hero-shape mf-shape-dot-2"></div>
+    <div class="mf-hero-content mf-reveal">
+        <div class="mf-hero-brand">MF</div>
+        <div class="mf-hero-label">
+            <span class="mf-hero-label-line"></span>
+            <span class="mf-hero-label-dot"></span>
+            Get in Touch
+            <span class="mf-hero-label-dot"></span>
+            <span class="mf-hero-label-line"></span>
+        </div>
+        <h1 class="mf-hero-title">Connect With Us</h1>
+        <p class="mf-hero-desc">Have a question about a product or your order? Our team at <strong>Modest Fashionista</strong> is here to help you.</p>
+        <div class="mf-hero-divider">
+            <div class="mf-hero-divider-line"></div>
+            <div class="mf-hero-divider-sq"></div>
+            <div class="mf-hero-divider-line"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Card -->
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="mf-contact-card mf-reveal">
+                <div class="row g-0">
+                    <!-- Info Panel -->
+                    <div class="col-lg-5">
+                        <div class="mf-info-panel">
+                            <h3 class="mf-info-title">Contact Information</h3>
+                            <p class="mf-info-desc">Fill out the form and our team will get back to you within 24 hours.</p>
+
+                            <div class="mf-info-item">
+                                <div class="mf-info-icon">
+                                    <i class="fa-solid fa-phone-volume"></i>
+                                </div>
+                                <div>
+                                    <div class="mf-info-label">Call Center</div>
+                                    <div class="mf-info-value">
+                                        <a href="tel:+8801xxxxxxxxx">+8801xxxxxxxxx</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mf-info-item">
+                                <div class="mf-info-icon">
+                                    <i class="fa-solid fa-envelope-open-text"></i>
+                                </div>
+                                <div>
+                                    <div class="mf-info-label">Email Address</div>
+                                    <div class="mf-info-value">
+                                        <a href="mailto:modestfashionsta@gmail.com">modestfashionsta@gmail.com</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mf-info-item">
+                                <div class="mf-info-icon">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <div class="mf-info-label">Main Hub</div>
+                                    <div class="mf-info-value">Dhaka, Bangladesh</div>
+                                </div>
+                            </div>
+
+                            <div class="mf-info-item">
+                                <div class="mf-info-icon">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <div>
+                                    <div class="mf-info-label">WhatsApp</div>
+                                    <div class="mf-info-value">
+                                        <a href="https://wa.me/+8801xxxxxxxxx" target="_blank" rel="noopener noreferrer">Chat with Us</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mf-social-section">
+                                <div class="mf-social-label">Follow Our Socials</div>
+                                <div class="d-flex flex-wrap">
+                                    <a href="#" class="mf-social-btn fb" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
+                                    <a href="https://wa.me/+8801xxxxxxxxx" class="mf-social-btn wa" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <a href="#" class="mf-social-btn ig" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
+                                    <a href="#" class="mf-social-btn tk" aria-label="TikTok" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-tiktok"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Panel -->
+                    <div class="col-lg-7">
+                        <div class="mf-form-panel">
+                            <div class="mf-form-header">
+                                <div class="mf-form-tag">
+                                    <div class="mf-form-tag-sq"></div>
+                                    <span>Send a Message</span>
+                                </div>
+                                <h4 class="mf-form-title">We'd Love to Hear From You</h4>
+                            </div>
+
+                            <form action="/contact" method="POST" id="contactForm" novalidate style="position: relative;">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="mf-field-label" for="field_name">Full Name</label>
+                                        <input type="text" name="name" id="field_name" class="mf-input" placeholder="e.g. Abdullah Al Mamun" required autocomplete="name">
+                                        <div class="mf-field-error" id="error_name"><i class="fa-solid fa-circle-exclamation"></i> Please enter your name</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="mf-field-label" for="field_email">Email Address</label>
+                                        <input type="email" name="email" id="field_email" class="mf-input" placeholder="example@mail.com" required autocomplete="email">
+                                        <div class="mf-field-error" id="error_email"><i class="fa-solid fa-circle-exclamation"></i> Please enter a valid email</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="mf-field-label" for="field_subject">Subject</label>
+                                        <input type="text" name="subject" id="field_subject" class="mf-input" placeholder="How can we help?" required>
+                                        <div class="mf-field-error" id="error_subject"><i class="fa-solid fa-circle-exclamation"></i> Please enter a subject</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="mf-field-label" for="field_message">Message</label>
+                                        <textarea name="message" id="field_message" class="mf-input" placeholder="Write your message here..." required></textarea>
+                                        <div class="mf-field-error" id="error_message"><i class="fa-solid fa-circle-exclamation"></i> Please write your message</div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="mf-btn-send mt-4" id="contactSubmitBtn">
+                                    <span class="mf-btn-label">Send Enquiry</span>
+                                    <span class="mf-send-icon"><i class="fa-solid fa-paper-plane"></i></span>
+                                </button>
+                            </form>
+
+                            <!-- Success State -->
+                            <div class="mf-form-success" id="formSuccess">
+                                <div class="mf-success-ring">
+                                    <div class="mf-success-icon"><i class="fa-solid fa-check"></i></div>
+                                </div>
+                                <h4 class="mf-success-title">Message Sent Successfully</h4>
+                                <p class="mf-success-desc">Thank you for reaching out. Our team will review your message and get back to you within 24 hours.</p>
+                                <button type="button" class="mf-success-btn" onclick="resetContactForm()">
+                                    <i class="fa-solid fa-arrow-rotate-left" style="font-size:0.72rem;"></i>
+                                    Send Another Message
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="mf-faq-section">
+        <div class="mf-faq-header mf-reveal">
+            <div class="mf-faq-tag">
+                <div class="mf-faq-tag-sq"></div>
+                Common Questions
+            </div>
+            <h2 class="mf-faq-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="mf-faq-grid">
+            <div class="mf-faq-item mf-reveal mf-reveal-delay-1">
+                <div class="mf-faq-icon">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <h6 class="mf-faq-q">How long does delivery take?</h6>
+                <p class="mf-faq-a">We typically deliver within 2-5 business days across Bangladesh, depending on your location.</p>
+            </div>
+            <div class="mf-faq-item mf-reveal mf-reveal-delay-2">
+                <div class="mf-faq-icon">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </div>
+                <h6 class="mf-faq-q">Can I return or exchange a product?</h6>
+                <p class="mf-faq-a">Yes, we accept returns within 3 days of delivery if the product is unused and in original packaging.</p>
+            </div>
+            <div class="mf-faq-item mf-reveal mf-reveal-delay-3">
+                <div class="mf-faq-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h6 class="mf-faq-q">Are all products authentic?</h6>
+                <p class="mf-faq-a">Absolutely. We source directly from authorized distributors to guarantee 100% genuine products.</p>
+            </div>
+            <div class="mf-faq-item mf-reveal mf-reveal-delay-4">
+                <div class="mf-faq-icon">
+                    <i class="fa-solid fa-credit-card"></i>
+                </div>
+                <h6 class="mf-faq-q">What payment methods do you accept?</h6>
+                <p class="mf-faq-a">We accept Cash on Delivery, bKash, and Nagad for a seamless and secure checkout experience.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ═══════════════ SCROLL REVEAL ═══════════════ */
+    var revealObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (e.isIntersecting) {
+                e.target.classList.add('mf-visible');
+                revealObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+    document.querySelectorAll('.mf-reveal').forEach(function(el) { revealObs.observe(el); });
+
+    /* ═══════════════ TOAST ═══════════════ */
+    function showToast(message, type) {
+        type = type || 'info';
+        var container = document.getElementById('mfToastContainer');
+        var toast = document.createElement('div');
+        var iconClass = type === 'error'
+            ? 'fa-solid fa-circle-xmark" style="color:#ef4444'
+            : 'fa-solid fa-circle-check" style="color:#22c55e';
+        toast.className = 'mf-toast' + (type === 'error' ? ' mf-toast-error' : '');
+        toast.innerHTML = '<i class="' + iconClass + '"></i><span>' + message + '</span>';
+        container.appendChild(toast);
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() { toast.classList.add('mf-toast-show'); });
+        });
+        setTimeout(function() {
+            toast.classList.remove('mf-toast-show');
+            setTimeout(function() { toast.remove(); }, 500);
+        }, 3500);
+    }
+
+    /* ═══════════════ EMAIL VALIDATION ═══════════════ */
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    /* ═══════════════ FORM VALIDATION & SUBMIT ═══════════════ */
+    var contactForm = document.getElementById('contactForm');
+    var submitBtn = document.getElementById('contactSubmitBtn');
+    var btnLabel = submitBtn.querySelector('.mf-btn-label');
+    var btnIcon = submitBtn.querySelector('.mf-send-icon');
+
+    var fieldConfigs = [
+        { input: 'field_name',    error: 'error_name',    validate: function(v) { return v.trim().length >= 2; } },
+        { input: 'field_email',   error: 'error_email',   validate: function(v) { return isValidEmail(v); } },
+        { input: 'field_subject', error: 'error_subject', validate: function(v) { return v.trim().length >= 2; } },
+        { input: 'field_message', error: 'error_message', validate: function(v) { return v.trim().length >= 5; } }
+    ];
+
+    /* Clear error on typing */
+    fieldConfigs.forEach(function(cfg) {
+        var input = document.getElementById(cfg.input);
+        input.addEventListener('input', function() {
+            input.classList.remove('is-invalid');
+            document.getElementById(cfg.error).classList.remove('mf-show');
+        });
+    });
+
+    contactForm.addEventListener('submit', function(e) {
+        var valid = true;
+        var firstInvalid = null;
+
+        fieldConfigs.forEach(function(cfg) {
+            var input = document.getElementById(cfg.input);
+            var errorEl = document.getElementById(cfg.error);
+
+            if (!cfg.validate(input.value)) {
+                input.classList.add('is-invalid');
+                errorEl.classList.add('mf-show');
+                valid = false;
+                if (!firstInvalid) firstInvalid = input;
+            } else {
+                input.classList.remove('is-invalid');
+                errorEl.classList.remove('mf-show');
+            }
+        });
+
+        if (!valid) {
+            e.preventDefault();
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(function() { firstInvalid.focus(); }, 400);
+            }
+            showToast('Please fix the highlighted fields.', 'error');
+            return;
+        }
+
+        /* Loading state */
+        submitBtn.disabled = true;
+        btnLabel.textContent = 'Sending...';
+        btnIcon.style.display = 'none';
+        var spinner = document.createElement('span');
+        spinner.className = 'mf-btn-spinner';
+        submitBtn.insertBefore(spinner, btnIcon);
+
+        /* If server-side success flash exists, intercept */
+        if (document.querySelector('[data-flash-success]')) {
+            e.preventDefault();
+            showSuccessState();
+        }
+    });
+
+    /* ═══════════════ SUCCESS STATE ═══════════════ */
+    function showSuccessState() {
+        contactForm.style.display = 'none';
+        document.querySelector('.mf-form-header').style.display = 'none';
+        document.getElementById('formSuccess').classList.add('mf-show');
+        showToast('Your message has been sent!', 'success');
+        resetSubmitBtn();
+    }
+
+    function resetContactForm() {
+        contactForm.reset();
+        contactForm.style.display = '';
+        document.querySelector('.mf-form-header').style.display = '';
+        document.getElementById('formSuccess').classList.remove('mf-show');
+        fieldConfigs.forEach(function(cfg) {
+            document.getElementById(cfg.input).classList.remove('is-invalid');
+            document.getElementById(cfg.error).classList.remove('mf-show');
+        });
+    }
+
+    function resetSubmitBtn() {
+        submitBtn.disabled = false;
+        btnLabel.textContent = 'Send Enquiry';
+        btnIcon.style.display = '';
+        var spinner = submitBtn.querySelector('.mf-btn-spinner');
+        if (spinner) spinner.remove();
+    }
+
+    /* ═══════════════ CHECK SERVER FLASH ON LOAD ═══════════════ */
+    (function() {
+        if (document.querySelector('[data-flash-success]')) {
+            showSuccessState();
+        }
+    })();
+</script>
+{% endblock %}

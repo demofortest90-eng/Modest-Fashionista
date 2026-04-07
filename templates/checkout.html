@@ -1,0 +1,1202 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+    :root {
+        --ps-purple: #7c3aed;
+        --ps-purple-light: #8b5cf6;
+        --ps-purple-pale: #a78bfa;
+        --ps-purple-muted: #c4b5fd;
+        --ps-purple-faint: #ede9fe;
+        --ps-purple-ghost: #f5f3ff;
+        --ps-violet: #6d28d9;
+        --ps-plum: #5b21b6;
+        --ps-dark: #1e1033;
+        --ps-surface: #fafafa;
+        --ps-border: rgba(124, 58, 237, 0.08);
+        --ps-border-soft: rgba(0, 0, 0, 0.05);
+        --ps-shadow-sm: 0 2px 8px rgba(124,58,237,0.04), 0 1px 3px rgba(0,0,0,0.03);
+        --ps-shadow-md: 0 8px 24px rgba(124,58,237,0.06), 0 2px 6px rgba(0,0,0,0.04);
+        --ps-shadow-lg: 0 20px 48px rgba(124,58,237,0.08), 0 8px 16px rgba(0,0,0,0.04);
+        --ps-shadow-xl: 0 32px 64px rgba(124,58,237,0.12), 0 12px 24px rgba(0,0,0,0.06);
+        --ps-radius-sm: 10px;
+        --ps-radius-md: 14px;
+        --ps-radius-lg: 20px;
+        --ps-radius-xl: 28px;
+        --ps-radius-full: 9999px;
+        --ps-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        --ps-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --ps-transition: 0.4s var(--ps-ease);
+        --ps-transition-fast: 0.2s var(--ps-ease);
+        --ps-transition-bounce: 0.6s var(--ps-ease-bounce);
+    }
+
+    /* ═══════════════ SECTION CARDS ═══════════════ */
+    .ps-form-card {
+        background: white;
+        border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border-soft);
+        box-shadow: var(--ps-shadow-sm);
+        overflow: hidden;
+        transition: var(--ps-transition);
+    }
+    .ps-form-card:hover { box-shadow: var(--ps-shadow-md); }
+    .ps-form-body { padding: 36px; }
+
+    /* ═══════════════ STEP HEADER ═══════════════ */
+    .ps-step-header {
+        display: flex; align-items: center; gap: 16px;
+        margin-bottom: 28px;
+    }
+    .ps-step-badge {
+        width: 40px; height: 40px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; font-weight: 900; color: white;
+        background: linear-gradient(135deg, var(--ps-purple), var(--ps-violet));
+        box-shadow: 0 6px 18px rgba(124,58,237,0.25);
+        flex-shrink: 0;
+    }
+    .ps-step-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.2rem; font-weight: 600;
+        color: var(--ps-dark); margin: 0;
+    }
+    .ps-step-sub {
+        font-size: 0.72rem; color: #9ca3af; font-weight: 600;
+        margin: 2px 0 0; text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .ps-step-divider {
+        height: 1px; border: none;
+        background: linear-gradient(90deg, var(--ps-border-soft), transparent);
+        margin: 0 0 36px 56px;
+    }
+
+    /* ═══════════════ FORM INPUTS ═══════════════ */
+    .ps-field-label {
+        display: block; font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: #9ca3af; margin-bottom: 10px;
+    }
+    .ps-input {
+        width: 100%; padding: 14px 18px;
+        background: var(--ps-surface);
+        border: 2px solid transparent;
+        border-radius: var(--ps-radius-sm);
+        font-size: 0.9rem; font-weight: 600; color: var(--ps-dark);
+        transition: var(--ps-transition);
+        outline: none;
+        font-family: 'Inter', sans-serif;
+    }
+    .ps-input::placeholder { color: #d1d5db; font-weight: 400; }
+    .ps-input:hover { border-color: rgba(124,58,237,0.15); background: white; }
+    .ps-input:focus {
+        border-color: var(--ps-purple);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+    }
+    .ps-input.is-invalid {
+        border-color: #f87171;
+        box-shadow: 0 0 0 4px rgba(248,113,113,0.08);
+    }
+    textarea.ps-input { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+    /* ═══════════════ PAYMENT OPTIONS ═══════════════ */
+    .ps-pay-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .ps-pay-option { position: relative; }
+    .ps-pay-option input { display: none; }
+    .ps-pay-card {
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center; padding: 28px 20px;
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 2px solid #e2e8f0;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+        text-decoration: none;
+    }
+    .ps-pay-card::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(124,58,237,0.03), rgba(109,40,217,0.03));
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .ps-pay-card:hover {
+        border-color: rgba(124,58,237,0.3);
+        transform: translateY(-4px);
+        box-shadow: var(--ps-shadow-md);
+    }
+    .ps-pay-card:hover::before { opacity: 1; }
+
+    .ps-pay-option input:checked + .ps-pay-card {
+        border-color: var(--ps-purple);
+        background: rgba(124,58,237,0.02);
+        box-shadow: 0 8px 28px rgba(124,58,237,0.15);
+        transform: translateY(-4px);
+    }
+    .ps-pay-option input:checked + .ps-pay-card::before { opacity: 1; }
+
+    .ps-pay-check {
+        position: absolute; top: 12px; right: 12px;
+        width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #e2e8f0;
+        display: flex; align-items: center; justify-content: center;
+        transition: var(--ps-transition);
+        font-size: 0.55rem; color: transparent;
+    }
+    .ps-pay-option input:checked + .ps-pay-card .ps-pay-check {
+        background: linear-gradient(135deg, var(--ps-purple), var(--ps-violet));
+        border-color: transparent; color: white;
+    }
+
+    .ps-pay-icon {
+        width: 56px; height: 56px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; margin-bottom: 14px;
+        transition: var(--ps-transition-bounce);
+        position: relative; z-index: 1;
+    }
+    .ps-pay-option input:checked ~ .ps-pay-icon { transform: scale(1.1); }
+    .ps-pay-icon-cod { background: rgba(124,58,237,0.08); color: var(--ps-purple); }
+    .ps-pay-icon-digital { background: rgba(124,58,237,0.08); color: var(--ps-purple-light); }
+
+    .ps-pay-label {
+        font-size: 0.88rem; font-weight: 800; color: var(--ps-dark);
+        margin-bottom: 4px; position: relative; z-index: 1;
+    }
+    .ps-pay-desc {
+        font-size: 0.7rem; color: #9ca3af; font-weight: 500;
+        position: relative; z-index: 1;
+    }
+
+    /* ═══════════════ TRX BOX ═══════════════ */
+    .ps-trx-section {
+        max-height: 0; overflow: hidden; opacity: 0;
+        transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                    opacity 0.4s ease, margin 0.4s ease;
+        margin-top: 0;
+    }
+    .ps-trx-section.ps-open {
+        max-height: 300px; opacity: 1; margin-top: 20px;
+    }
+    .ps-trx-box {
+        background: white;
+        border-radius: var(--ps-radius-md);
+        border: 1px solid var(--ps-border-soft);
+        padding: 24px; position: relative; overflow: hidden;
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-trx-box::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+        background: linear-gradient(180deg, var(--ps-purple), var(--ps-violet));
+        border-radius: 0 4px 4px 0;
+    }
+    .ps-trx-header {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .ps-trx-icon {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(124,58,237,0.08);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--ps-purple); font-size: 0.85rem;
+    }
+    .ps-trx-title { font-size: 0.88rem; font-weight: 800; color: var(--ps-dark); margin: 0; }
+    .ps-trx-hint {
+        font-size: 0.7rem; color: #9ca3af; margin-top: 10px; line-height: 1.5;
+    }
+
+    /* ═══════════════ PROMO CARD ═══════════════ */
+    .ps-promo-card {
+        background: white; border-radius: var(--ps-radius-lg);
+        border: 1px solid var(--ps-border-soft);
+        padding: 24px; box-shadow: var(--ps-shadow-sm);
+        transition: var(--ps-transition);
+    }
+    .ps-promo-card:hover { box-shadow: var(--ps-shadow-md); }
+    .ps-promo-header {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .ps-promo-icon {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: var(--ps-purple-faint);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--ps-purple); font-size: 0.9rem;
+    }
+    .ps-promo-title { font-size: 0.88rem; font-weight: 800; color: var(--ps-dark); margin: 0; }
+    .ps-promo-input-wrap {
+        display: flex; gap: 10px;
+    }
+    .ps-promo-input {
+        flex: 1; padding: 12px 16px;
+        background: var(--ps-surface);
+        border: 2px solid transparent;
+        border-radius: var(--ps-radius-sm);
+        font-size: 0.85rem; font-weight: 700; color: var(--ps-dark);
+        text-transform: uppercase; letter-spacing: 0.08em;
+        outline: none; transition: var(--ps-transition);
+        font-family: 'Inter', sans-serif;
+    }
+    .ps-promo-input:focus {
+        border-color: var(--ps-purple);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+    }
+    .ps-promo-input.is-applied {
+        border-color: var(--ps-purple);
+        background: rgba(124,58,237,0.03);
+        color: var(--ps-purple);
+    }
+    .ps-promo-btn {
+        padding: 12px 24px; border: none; border-radius: var(--ps-radius-sm);
+        background: var(--ps-dark); color: white;
+        font-size: 0.82rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        white-space: nowrap;
+        display: flex; align-items: center; gap: 6px;
+        font-family: 'Inter', sans-serif;
+    }
+    .ps-promo-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30,16,51,0.2);
+    }
+    .ps-promo-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
+    .ps-promo-msg {
+        margin-top: 12px; font-size: 0.78rem; font-weight: 700;
+        display: flex; align-items: center; gap: 6px;
+        min-height: 20px;
+    }
+    .ps-promo-msg-success { color: var(--ps-purple); }
+    .ps-promo-msg-error { color: #ef4444; }
+
+    /* ═══════════════ SUMMARY ═══════════════ */
+    .ps-summary-card {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border-soft);
+        box-shadow: var(--ps-shadow-md);
+        overflow: hidden; position: sticky; top: 100px;
+    }
+    .ps-summary-head { padding: 24px 28px 0; }
+    .ps-summary-title {
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--ps-dark); margin: 0;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .ps-summary-title::after {
+        content: ''; flex: 1; height: 1px;
+        background: var(--ps-border-soft);
+    }
+    .ps-summary-body { padding: 24px 28px; }
+
+    /* Items list */
+    .ps-items-list {
+        max-height: 260px; overflow-y: auto; margin-bottom: 20px;
+        scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent;
+    }
+    .ps-items-list::-webkit-scrollbar { width: 4px; }
+    .ps-items-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+    .ps-sum-item {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--ps-border-soft);
+    }
+    .ps-sum-item:last-child { border-bottom: none; }
+    .ps-sum-item-img {
+        width: 52px; height: 52px; border-radius: var(--ps-radius-sm);
+        flex-shrink: 0;
+        border: 1px solid var(--ps-border-soft);
+        position: relative;
+        overflow: hidden;
+    }
+    .ps-sum-item-img img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .ps-sum-item-qty {
+        position: absolute; top: -5px; right: -5px;
+        width: 20px; height: 20px; border-radius: 50%;
+        background: var(--ps-dark); color: white;
+        font-size: 0.55rem; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        border: 2px solid white;
+    }
+    .ps-sum-item-info { flex: 1; min-width: 0; }
+    .ps-sum-item-name {
+        font-size: 0.78rem; font-weight: 700; color: var(--ps-dark);
+        margin: 0; line-height: 1.3;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ps-sum-item-variant {
+        font-size: 0.62rem; font-weight: 700; color: var(--ps-purple);
+        margin-top: 2px;
+    }
+    .ps-sum-item-unit {
+        font-size: 0.62rem; color: #9ca3af; margin-top: 1px;
+    }
+    .ps-sum-item-total {
+        font-size: 0.82rem; font-weight: 800; color: var(--ps-dark);
+        flex-shrink: 0;
+    }
+
+    /* Price breakdown */
+    .ps-price-breakdown {
+        background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+        padding: 18px; margin-bottom: 4px;
+    }
+    .ps-sum-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 8px 0;
+    }
+    .ps-sum-row + .ps-sum-row { border-top: 1px solid var(--ps-border-soft); }
+    .ps-sum-label {
+        font-size: 0.82rem; color: #64748b; font-weight: 500;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .ps-sum-label i { font-size: 0.7rem; color: var(--ps-purple); }
+    .ps-sum-value {
+        font-size: 0.85rem; font-weight: 700; color: var(--ps-dark);
+    }
+    .ps-sum-free-badge {
+        font-size: 0.62rem; font-weight: 800; color: var(--ps-purple);
+        background: var(--ps-purple-ghost);
+        padding: 3px 10px; border-radius: var(--ps-radius-full);
+        border: 1px solid rgba(124,58,237,0.08);
+    }
+    .ps-sum-discount-value {
+        color: var(--ps-purple); font-weight: 800;
+    }
+
+    /* Total row */
+    .ps-total-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 20px 0 4px;
+        border-top: 2px solid var(--ps-border-soft);
+        margin-top: 8px;
+    }
+    .ps-total-label {
+        font-size: 0.95rem; font-weight: 800; color: var(--ps-dark);
+    }
+    .ps-total-value {
+        font-size: 1.6rem; font-weight: 900;
+        color: var(--ps-violet); line-height: 1;
+        transition: transform 0.3s var(--ps-ease-bounce);
+    }
+    .ps-total-currency { font-size: 0.95rem; font-weight: 700; }
+
+    /* Place Order Button */
+    .ps-btn-place {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 56px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: var(--ps-dark); color: white;
+        font-size: 0.9rem; font-weight: 800;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+        margin-top: 24px;
+        font-family: 'Inter', sans-serif;
+    }
+    .ps-btn-place::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-purple), var(--ps-violet));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-btn-place span, .ps-btn-place i { position: relative; z-index: 1; }
+    .ps-btn-place:hover::before { opacity: 1; }
+    .ps-btn-place:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(124,58,237,0.3);
+        color: white;
+    }
+    .ps-btn-place:active { transform: translateY(-1px); }
+    .ps-btn-place:disabled {
+        cursor: not-allowed; opacity: 0.75; transform: none !important;
+        box-shadow: none !important;
+    }
+    .ps-place-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.75rem;
+        transition: var(--ps-transition-bounce);
+    }
+    .ps-btn-place:hover .ps-place-icon { transform: translateX(4px); }
+
+    .ps-secure-note {
+        text-align: center; margin-top: 16px;
+        font-size: 0.68rem; color: #9ca3af; font-weight: 600;
+    }
+    .ps-secure-note i { color: var(--ps-purple); margin-right: 4px; }
+
+    /* ═══════════════ MODAL ═══════════════ */
+    .ps-modal-content {
+        background: white; border-radius: var(--ps-radius-xl);
+        border: 1px solid var(--ps-border-soft);
+        box-shadow: var(--ps-shadow-xl);
+        overflow: hidden;
+    }
+    .ps-modal-header {
+        padding: 28px 28px 0; border: none;
+    }
+    .ps-modal-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.25rem; font-weight: 600;
+        color: var(--ps-dark);
+    }
+    .ps-modal-body { padding: 24px 28px; }
+    .ps-modal-footer { padding: 0 28px 28px; border: none; }
+
+    .ps-pay-amount {
+        text-align: center; margin-bottom: 24px;
+        padding: 16px; background: var(--ps-surface);
+        border-radius: var(--ps-radius-md);
+    }
+    .ps-pay-amount-label {
+        font-size: 0.68rem; font-weight: 800;
+        letter-spacing: 0.15em; text-transform: uppercase;
+        color: #9ca3af; margin-bottom: 4px;
+    }
+    .ps-pay-amount-value {
+        font-size: 1.8rem; font-weight: 900;
+        color: var(--ps-violet);
+    }
+    .ps-pay-amount-value .ps-total-currency { font-size: 1.1rem; }
+
+    .ps-payment-method-card {
+        display: flex; align-items: center; gap: 16px;
+        padding: 18px; background: white;
+        border: 1px solid var(--ps-border-soft);
+        border-radius: var(--ps-radius-md);
+        margin-bottom: 14px; transition: var(--ps-transition);
+        box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-payment-method-card:hover {
+        box-shadow: var(--ps-shadow-md);
+        transform: translateY(-2px);
+    }
+    .ps-pm-icon {
+        width: 48px; height: 48px; border-radius: 12px;
+        background: var(--ps-surface);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; overflow: hidden;
+    }
+    .ps-pm-icon img { width: 32px; height: 32px; object-fit: contain; }
+    .ps-pm-info { flex: 1; }
+    .ps-pm-type {
+        font-size: 0.6rem; font-weight: 800;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: #9ca3af;
+    }
+    .ps-pm-number {
+        font-size: 1.05rem; font-weight: 900; color: var(--ps-dark);
+        font-family: 'Inter', monospace; letter-spacing: 0.5px;
+    }
+    .ps-copy-btn {
+        width: 40px; height: 40px; border-radius: 10px;
+        border: 1px solid var(--ps-border-soft); background: white;
+        display: flex; align-items: center; justify-content: center;
+        color: #9ca3af; font-size: 0.8rem;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative;
+    }
+    .ps-copy-btn:hover {
+        border-color: var(--ps-purple);
+        color: var(--ps-purple);
+        transform: scale(1.08);
+    }
+    .ps-copy-btn.copied {
+        border-color: var(--ps-purple);
+        color: var(--ps-purple);
+        background: rgba(124,58,237,0.05);
+    }
+    .ps-copy-tooltip {
+        position: absolute; bottom: calc(100% + 8px); left: 50%;
+        transform: translateX(-50%) scale(0);
+        background: var(--ps-dark); color: white;
+        font-size: 0.6rem; font-weight: 700; padding: 4px 10px;
+        border-radius: 6px; white-space: nowrap;
+        pointer-events: none; transition: var(--ps-transition-bounce);
+    }
+    .ps-copy-tooltip::after {
+        content: ''; position: absolute; top: 100%; left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid transparent; border-top-color: var(--ps-dark);
+    }
+    .ps-copy-btn.copied .ps-copy-tooltip {
+        transform: translateX(-50%) scale(1);
+    }
+
+    .ps-modal-info {
+        display: flex; gap: 12px; padding: 16px;
+        background: rgba(124,58,237,0.04);
+        border: 1px solid rgba(124,58,237,0.08);
+        border-radius: var(--ps-radius-md);
+        margin-bottom: 8px;
+    }
+    .ps-modal-info i { color: var(--ps-purple); margin-top: 2px; flex-shrink: 0; }
+    .ps-modal-info span {
+        font-size: 0.82rem; color: var(--ps-dark);
+        font-weight: 600; line-height: 1.6;
+    }
+
+    .ps-modal-place-btn {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; height: 52px;
+        border: none; border-radius: var(--ps-radius-md);
+        background: var(--ps-dark); color: white;
+        font-size: 0.85rem; font-weight: 800;
+        letter-spacing: 0.04em; text-transform: uppercase;
+        cursor: pointer; transition: var(--ps-transition);
+        position: relative; overflow: hidden;
+        font-family: 'Inter', sans-serif;
+    }
+    .ps-modal-place-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--ps-purple), var(--ps-violet));
+        opacity: 0; transition: opacity 0.35s ease;
+    }
+    .ps-modal-place-btn span,
+    .ps-modal-place-btn i { position: relative; z-index: 1; }
+    .ps-modal-place-btn:hover::before { opacity: 1; }
+    .ps-modal-place-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(124,58,237,0.3);
+        color: white;
+    }
+
+    /* ═══════════════ TOAST ═══════════════ */
+    .ps-toast-container {
+        position: fixed; top: 24px; right: 24px; z-index: 9999;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none;
+    }
+    .ps-toast {
+        padding: 14px 20px; border-radius: var(--ps-radius-sm);
+        background: white; color: var(--ps-dark);
+        font-size: 0.82rem; font-weight: 700;
+        box-shadow: var(--ps-shadow-lg);
+        border-left: 4px solid var(--ps-purple);
+        display: flex; align-items: center; gap: 10px;
+        pointer-events: auto;
+        transform: translateX(120%);
+        transition: transform 0.5s var(--ps-ease), opacity 0.3s ease;
+        opacity: 0;
+    }
+    .ps-toast.ps-toast-show {
+        transform: translateX(0); opacity: 1;
+    }
+    .ps-toast-error { border-left-color: #ef4444; }
+    .ps-toast i { font-size: 1rem; flex-shrink: 0; }
+
+    /* ═══════════════ REVEAL ═══════════════ */
+    .ps-reveal {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.7s ease, transform 0.7s var(--ps-ease);
+    }
+    .ps-reveal.ps-visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════════ LOADING SPINNER ON BTN ═══════════════ */
+    .ps-btn-spinner {
+        width: 18px; height: 18px;
+        border: 2.5px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: ps-spin 0.6s linear infinite;
+    }
+    @keyframes ps-spin { to { transform: rotate(360deg); } }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 991px) {
+        .ps-summary-card { position: static; margin-top: 8px; }
+        .ps-form-body { padding: 28px; }
+    }
+
+    @media (max-width: 767px) {
+        .ps-form-body { padding: 24px 20px; }
+        .ps-step-badge {
+            width: 36px; height: 36px;
+            font-size: 0.78rem; border-radius: 10px;
+        }
+        .ps-step-title { font-size: 1.05rem; }
+        .ps-step-divider { margin-left: 52px; }
+        .ps-pay-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ps-pay-card { padding: 20px 14px; }
+        .ps-pay-icon {
+            width: 46px; height: 46px;
+            font-size: 1.2rem; border-radius: 12px;
+        }
+        .ps-pay-label { font-size: 0.8rem; }
+        .ps-summary-body { padding: 20px; }
+        .ps-summary-head { padding: 20px 20px 0; }
+        .ps-total-value { font-size: 1.35rem; }
+        .ps-btn-place { height: 52px; font-size: 0.85rem; }
+        .modal-dialog { margin: 0 8px; }
+        .ps-modal-body { padding: 20px; }
+        .ps-modal-header { padding: 20px 20px 0; }
+        .ps-modal-footer { padding: 0 20px 20px; }
+        .ps-pay-amount-value { font-size: 1.5rem; }
+        .ps-toast-container { top: 12px; right: 12px; left: 12px; }
+    }
+
+    @media (max-width: 400px) {
+        .ps-pay-grid { grid-template-columns: 1fr; }
+        .ps-promo-input-wrap { flex-direction: column; }
+        .ps-promo-btn { justify-content: center; }
+    }
+</style>
+
+<!-- Toast Container -->
+<div class="ps-toast-container" id="psToastContainer"></div>
+
+<div class="container py-4 py-lg-5">
+    <div class="row g-4 g-lg-5">
+
+        <!-- ══════ FORM COLUMN ══════ -->
+        <div class="col-lg-7">
+            <div class="ps-form-card ps-reveal">
+                <div class="ps-form-body">
+                    <form action="/checkout" method="POST" id="checkoutForm" novalidate>
+                        <input type="hidden" name="applied_promo" id="hiddenPromoCode" value="{{ session.get('applied_promo', {}).get('code', '') }}">
+                        <input type="hidden" name="discount_amount" id="hiddenDiscountAmount" value="0">
+                        <input type="hidden" name="delivery_charge" id="hiddenDeliveryCharge" value="{{ delivery_charge|default(0) }}">
+                        <input type="hidden" name="final_total" id="hiddenFinalTotal" value="{{ (total + delivery_charge|default(0))|round(2) }}">
+
+                        <!-- Step 1: Shipping -->
+                        <div class="ps-step-header">
+                            <div class="ps-step-badge">1</div>
+                            <div>
+                                <h5 class="ps-step-title">Shipping Destination</h5>
+                                <p class="ps-step-sub">Where should we deliver?</p>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="ps-field-label" for="field_name">Receiver Name</label>
+                                <input type="text" name="name" id="field_name" class="ps-input" placeholder="Full Name" required autocomplete="name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="ps-field-label" for="field_phone">Contact Number</label>
+                                <input type="tel" name="phone" id="field_phone" class="ps-input" placeholder="01xxxxxxxxx" required autocomplete="tel">
+                            </div>
+                            <div class="col-12">
+                                <label class="ps-field-label" for="field_address">Detailed Address</label>
+                                <textarea name="address" id="field_address" class="ps-input" rows="3" placeholder="House no, Road, Area, District..." required></textarea>
+                            </div>
+                        </div>
+
+                        <hr class="ps-step-divider">
+
+                        <!-- Step 2: Payment -->
+                        <div class="ps-step-header">
+                            <div class="ps-step-badge">2</div>
+                            <div>
+                                <h5 class="ps-step-title">Payment Method</h5>
+                                <p class="ps-step-sub">Choose how you want to pay</p>
+                            </div>
+                        </div>
+
+                        <div class="ps-pay-grid">
+                            <div class="ps-pay-option">
+                                <input type="radio" name="payment_method" id="pay_cod" value="cod" checked>
+                                <label class="ps-pay-card" for="pay_cod" onclick="togglePaymentFields(false)">
+                                    <div class="ps-pay-check"><i class="fa-solid fa-check"></i></div>
+                                    <div class="ps-pay-icon ps-pay-icon-cod">
+                                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                                    </div>
+                                    <span class="ps-pay-label">Cash on Delivery</span>
+                                    <span class="ps-pay-desc">Pay when you receive</span>
+                                </label>
+                            </div>
+                            <div class="ps-pay-option">
+                                <input type="radio" name="payment_method" id="pay_now" value="digital">
+                                <label class="ps-pay-card" for="pay_now" onclick="handleDigitalSelect(event)">
+                                    <div class="ps-pay-check"><i class="fa-solid fa-check"></i></div>
+                                    <div class="ps-pay-icon ps-pay-icon-digital">
+                                        <i class="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <span class="ps-pay-label">Online Payment</span>
+                                    <span class="ps-pay-desc">bKash / Nagad</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Trx Section (hidden by default) -->
+                        <div id="trx_section" class="ps-trx-section">
+                            <div class="ps-trx-box">
+                                <div class="ps-trx-header">
+                                    <div class="ps-trx-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                                    <h6 class="ps-trx-title">Verification Details</h6>
+                                </div>
+                                <label class="ps-field-label" for="trx_input">Transaction ID (TrxID)</label>
+                                <input type="text" name="transaction_id" id="trx_input" class="ps-input" placeholder="e.g. 9K3L5M7N">
+                                <p class="ps-trx-hint">Paste the ID exactly as shown in your payment confirmation SMS</p>
+                            </div>
+                        </div>
+
+                        <!-- Mobile CTA -->
+                        <button type="submit" class="ps-btn-place w-100 d-lg-none" id="mobileSubmitBtn">
+                            <span>Confirm Order &bull; ৳<span class="finalTotalDisplay">{{ (total + delivery_charge|default(0))|round(2) }}</span></span>
+                            <span class="ps-place-icon"><i class="fa-solid fa-arrow-right"></i></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════ SUMMARY COLUMN ══════ -->
+        <div class="col-lg-5">
+            <!-- Promo Code -->
+            <div class="ps-promo-card ps-reveal" style="margin-bottom: 16px;">
+                <div class="ps-promo-header">
+                    <div class="ps-promo-icon"><i class="fa-solid fa-ticket"></i></div>
+                    <h6 class="ps-promo-title">Promo Code</h6>
+                </div>
+                <div class="ps-promo-input-wrap">
+                    <input type="text" id="promoInput" class="ps-promo-input" placeholder="ENTER CODE" value="{{ session.get('applied_promo', {}).get('code', '') }}" autocomplete="off">
+                    <button class="ps-promo-btn" type="button" id="promoBtn" onclick="applyPromo()">
+                        <span>Apply</span>
+                    </button>
+                </div>
+                <div id="promoMessage" class="ps-promo-msg"></div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="ps-summary-card ps-reveal">
+                <div class="ps-summary-head">
+                    <h6 class="ps-summary-title">Order Summary</h6>
+                </div>
+                <div class="ps-summary-body">
+                    <!-- Items -->
+                    <div class="ps-items-list">
+                        {% for item in items %}
+                        <div class="ps-sum-item">
+                            <div class="ps-sum-item-img">
+                                <img src="{{ item.image }}" alt="{{ item.title }}" loading="lazy">
+                                <span class="ps-sum-item-qty">{{ item.quantity }}</span>
+                            </div>
+                            <div class="ps-sum-item-info">
+                                <p class="ps-sum-item-name" title="{{ item.title }}">{{ item.title }}</p>
+                                {% if item.variant %}
+                                <div class="ps-sum-item-variant">{{ item.variant }}</div>
+                                {% endif %}
+                                <div class="ps-sum-item-unit">৳{{ item.price }} each</div>
+                            </div>
+                            <span class="ps-sum-item-total">৳{{ item.total }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Price Breakdown -->
+                    <div class="ps-price-breakdown">
+                        <div class="ps-sum-row">
+                            <span class="ps-sum-label">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                                Subtotal
+                            </span>
+                            <span class="ps-sum-value">৳{{ total }}</span>
+                        </div>
+
+                        <div class="ps-sum-row" id="discountRow" style="display: none;">
+                            <span class="ps-sum-label">
+                                <i class="fa-solid fa-tag"></i>
+                                Promo (<span id="discountPercentDisplay">0</span>%)
+                            </span>
+                            <span class="ps-sum-discount-value">-৳<span id="discountAmountDisplay">0</span></span>
+                        </div>
+
+                        <div class="ps-sum-row">
+                            <span class="ps-sum-label">
+                                <i class="fa-solid fa-truck"></i>
+                                Delivery
+                            </span>
+                            {% if delivery_charge and delivery_charge|int > 0 %}
+                                <span class="ps-sum-value">৳{{ delivery_charge }}</span>
+                            {% else %}
+                                <span class="ps-sum-free-badge">FREE</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="ps-total-row">
+                        <span class="ps-total-label">Total Due</span>
+                        <span class="ps-total-value">
+                            <span class="ps-total-currency">৳</span><span class="finalTotalDisplay">{{ (total + delivery_charge|default(0))|round(2) }}</span>
+                        </span>
+                    </div>
+
+                    <!-- Desktop CTA -->
+                    <button type="submit" form="checkoutForm" class="ps-btn-place w-100 d-none d-lg-block" id="desktopSubmitBtn">
+                        <span>Place Your Order</span>
+                        <span class="ps-place-icon"><i class="fa-solid fa-arrow-right"></i></span>
+                    </button>
+
+                    <div class="ps-secure-note">
+                        <i class="fa-solid fa-lock"></i> Secure checkout by Modest Fashionista
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ PAYMENT INSTRUCTION MODAL ═══════════════ -->
+<div class="modal fade" id="paymentInstructionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="ps-modal-content">
+            <div class="ps-modal-header">
+                <div class="d-flex align-items-center gap-3 w-100">
+                    <div class="ps-pay-icon ps-pay-icon-digital" style="width:42px;height:42px;font-size:1.1rem;flex-shrink:0;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h5 class="ps-modal-title flex-grow-1">Send Digital Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="ps-modal-body">
+                <div class="ps-pay-amount">
+                    <div class="ps-pay-amount-label">Amount to Send</div>
+                    <div class="ps-pay-amount-value">
+                        <span class="ps-total-currency">৳</span><span class="finalTotalDisplay">{{ (total + delivery_charge|default(0))|round(2) }}</span>
+                    </div>
+                </div>
+
+                <div class="ps-payment-method-card">
+                    <div class="ps-pm-icon">
+                        <img src="https://i.ibb.co.com/Y7R07wgN/BKash-Logo-icon-700x662.png" alt="bKash" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=&quot;font-size:1rem;font-weight:900;color:#E2136E&quot;>bKash</span>'">
+                    </div>
+                    <div class="ps-pm-info">
+                        <div class="ps-pm-type">bKash Personal</div>
+                        <div class="ps-pm-number">01xxxxxxxx</div>
+                    </div>
+                    <button class="ps-copy-btn" onclick="copyNum(this, '01xxxxxxxx')" type="button" aria-label="Copy bKash number">
+                        <i class="fa-regular fa-copy"></i>
+                        <span class="ps-copy-tooltip">Copied!</span>
+                    </button>
+                </div>
+
+                <div class="ps-payment-method-card">
+                    <div class="ps-pm-icon">
+                        <img src="https://i.ibb.co.com/6cpWJHWk/Nagad-Logo-wine.png" alt="Nagad" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=&quot;font-size:1rem;font-weight:900;color:#F6921E&quot;>Nagad</span>'">
+                    </div>
+                    <div class="ps-pm-info">
+                        <div class="ps-pm-type">Nagad Personal</div>
+                        <div class="ps-pm-number">01xxxxxxxx</div>
+                    </div>
+                    <button class="ps-copy-btn" onclick="copyNum(this, '01xxxxxxxx')" type="button" aria-label="Copy Nagad number">
+                        <i class="fa-regular fa-copy"></i>
+                        <span class="ps-copy-tooltip">Copied!</span>
+                    </button>
+                </div>
+
+                <div class="ps-modal-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>টাকা পাঠানোর পর প্রাপ্ত <strong>Transaction ID</strong> টি চেকআউট পেজের বক্সে পেস্ট করুন।</span>
+                </div>
+            </div>
+            <div class="ps-modal-footer">
+                <button type="button" class="ps-modal-place-btn" data-bs-dismiss="modal">
+                    <span>I Have Completed Payment</span>
+                    <i class="fa-solid fa-check"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ═══════════════ STATE ═══════════════ */
+    const subtotal = parseFloat("{{ total|default(0) }}") || 0;
+    const deliveryCharge = parseFloat("{{ delivery_charge|default(0) }}") || 0;
+    const originalTotal = subtotal + deliveryCharge;
+    let currentDiscount = 0;
+    let promoApplied = false;
+
+    /* ═══════════════ SCROLL REVEAL ═══════════════ */
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('ps-visible');
+                revealObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.ps-reveal').forEach(el => revealObs.observe(el));
+
+    /* ═══════════════ TOAST ═══════════════ */
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('psToastContainer');
+        const toast = document.createElement('div');
+        const iconMap = {
+            info: 'fa-solid fa-circle-info" style="color:var(--ps-purple)',
+            success: 'fa-solid fa-circle-check" style="color:#22c55e',
+            error: 'fa-solid fa-circle-xmark" style="color:#ef4444'
+        };
+        toast.className = 'ps-toast' + (type === 'error' ? ' ps-toast-error' : '');
+        toast.innerHTML = `<i class="${iconMap[type] || iconMap.info}"></i><span>${message}</span>`;
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => toast.classList.add('ps-toast-show'));
+        });
+        setTimeout(() => {
+            toast.classList.remove('ps-toast-show');
+            setTimeout(() => toast.remove(), 500);
+        }, 3500);
+    }
+
+    /* ═══════════════ COPY NUMBER ═══════════════ */
+    function copyNum(btn, num) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(num).then(() => onCopySuccess(btn)).catch(() => fallbackCopy(btn, num));
+        } else {
+            fallbackCopy(btn, num);
+        }
+    }
+    function fallbackCopy(btn, num) {
+        const ta = document.createElement('textarea');
+        ta.value = num; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); onCopySuccess(btn); } catch(e) {}
+        document.body.removeChild(ta);
+    }
+    function onCopySuccess(btn) {
+        btn.classList.add('copied');
+        const icon = btn.querySelector('i');
+        icon.className = 'fa-solid fa-check';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            icon.className = 'fa-regular fa-copy';
+        }, 2000);
+    }
+
+    /* ═══════════════ PAYMENT TOGGLE ═══════════════ */
+    function togglePaymentFields(isOnline) {
+        const section = document.getElementById('trx_section');
+        const input = document.getElementById('trx_input');
+        if (isOnline) {
+            section.classList.add('ps-open');
+            setTimeout(() => { input.required = true; }, 300);
+        } else {
+            section.classList.remove('ps-open');
+            input.required = false;
+            input.value = '';
+            input.classList.remove('is-invalid');
+        }
+    }
+
+    function handleDigitalSelect(e) {
+        togglePaymentFields(true);
+        const modal = new bootstrap.Modal(document.getElementById('paymentInstructionModal'));
+        modal.show();
+    }
+
+    /* ═══════════════ PROMO CODE ═══════════════ */
+    function applyPromo() {
+        const codeInput = document.getElementById('promoInput');
+        const code = codeInput.value.trim().toUpperCase();
+        const msg = document.getElementById('promoMessage');
+        const btn = document.getElementById('promoBtn');
+
+        if (!code) {
+            codeInput.focus();
+            return;
+        }
+
+        /* If already applied with same code, do nothing */
+        if (promoApplied && document.getElementById('hiddenPromoCode').value === code) {
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="ps-btn-spinner"></span><span>Checking</span>';
+
+        fetch('/apply_promo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'promo_code=' + encodeURIComponent(code)
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<span>Apply</span>';
+
+            if (data.success) {
+                const discPerc = parseFloat(data.discount);
+                const discAmt = (subtotal * discPerc) / 100;
+                const finalTotal = originalTotal - discAmt;
+                currentDiscount = discAmt;
+                promoApplied = true;
+
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountPercentDisplay').textContent = discPerc;
+                document.getElementById('discountAmountDisplay').textContent = discAmt.toFixed(2);
+
+                updateTotalDisplay(finalTotal);
+
+                document.getElementById('hiddenPromoCode').value = code;
+                document.getElementById('hiddenDiscountAmount').value = discAmt.toFixed(2);
+                document.getElementById('hiddenFinalTotal').value = finalTotal.toFixed(2);
+
+                codeInput.classList.add('is-applied');
+                codeInput.readOnly = true;
+
+                msg.className = 'ps-promo-msg ps-promo-msg-success';
+                msg.innerHTML = '<i class="fa-solid fa-circle-check"></i> PROMO APPLIED — ' + discPerc + '% OFF';
+
+                showToast('Promo code applied! ' + discPerc + '% discount added.', 'success');
+            } else {
+                msg.className = 'ps-promo-msg ps-promo-msg-error';
+                msg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> ' + (data.message || 'THIS CODE IS INVALID');
+                resetPromoUI();
+                showToast(data.message || 'Invalid promo code.', 'error');
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<span>Apply</span>';
+            msg.className = 'ps-promo-msg ps-promo-msg-error';
+            msg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> SOMETHING WENT WRONG';
+            showToast('Network error. Please try again.', 'error');
+        });
+    }
+
+    function resetPromoUI() {
+        currentDiscount = 0;
+        promoApplied = false;
+        document.getElementById('discountRow').style.display = 'none';
+        updateTotalDisplay(originalTotal);
+        document.getElementById('hiddenPromoCode').value = '';
+        document.getElementById('hiddenDiscountAmount').value = '0';
+        document.getElementById('hiddenFinalTotal').value = originalTotal.toFixed(2);
+
+        const codeInput = document.getElementById('promoInput');
+        codeInput.classList.remove('is-applied');
+        codeInput.readOnly = false;
+    }
+
+    function updateTotalDisplay(amount) {
+        document.querySelectorAll('.finalTotalDisplay').forEach(el => {
+            el.textContent = amount.toFixed(2);
+            const parent = el.closest('.ps-total-value');
+            if (parent) {
+                parent.style.transform = 'scale(1.06)';
+                setTimeout(() => { parent.style.transform = 'scale(1)'; }, 300);
+            }
+        });
+    }
+
+    document.getElementById('promoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
+    });
+
+    /* ═══════════════ RESTORE PRE-APPLIED PROMO ON LOAD ═══════════════ */
+    (function restorePromo() {
+        const savedCode = "{{ session.get('applied_promo', {}).get('code', '') }}";
+        const savedDiscount = parseFloat("{{ session.get('applied_promo', {}).get('discount_percent', 0) }}") || 0;
+        if (savedCode && savedDiscount > 0) {
+            const discAmt = (subtotal * savedDiscount) / 100;
+            const finalTotal = originalTotal - discAmt;
+            currentDiscount = discAmt;
+            promoApplied = true;
+
+            document.getElementById('discountRow').style.display = 'flex';
+            document.getElementById('discountPercentDisplay').textContent = savedDiscount;
+            document.getElementById('discountAmountDisplay').textContent = discAmt.toFixed(2);
+            updateTotalDisplay(finalTotal);
+
+            document.getElementById('hiddenPromoCode').value = savedCode;
+            document.getElementById('hiddenDiscountAmount').value = discAmt.toFixed(2);
+            document.getElementById('hiddenFinalTotal').value = finalTotal.toFixed(2);
+
+            const codeInput = document.getElementById('promoInput');
+            codeInput.classList.add('is-applied');
+            codeInput.readOnly = true;
+
+            const msg = document.getElementById('promoMessage');
+            msg.className = 'ps-promo-msg ps-promo-msg-success';
+            msg.innerHTML = '<i class="fa-solid fa-circle-check"></i> PROMO APPLIED — ' + savedDiscount + '% OFF';
+        }
+    })();
+
+    /* ═══════════════ FORM VALIDATION & SUBMIT ═══════════════ */
+    const checkoutForm = document.getElementById('checkoutForm');
+
+    checkoutForm.addEventListener('submit', function(e) {
+        let valid = true;
+        const fields = [
+            { id: 'field_name', name: 'Receiver name' },
+            { id: 'field_phone', name: 'Contact number' },
+            { id: 'field_address', name: 'Address' }
+        ];
+
+        fields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (!el.value.trim()) {
+                el.classList.add('is-invalid');
+                valid = false;
+            } else {
+                el.classList.remove('is-invalid');
+            }
+        });
+
+        /* Validate TrxID if digital payment */
+        if (document.getElementById('pay_now').checked) {
+            const trx = document.getElementById('trx_input');
+            if (!trx.value.trim()) {
+                trx.classList.add('is-invalid');
+                valid = false;
+                showToast('Please enter your Transaction ID.', 'error');
+            } else {
+                trx.classList.remove('is-invalid');
+            }
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            /* Scroll to first invalid field */
+            const firstInvalid = checkoutForm.querySelector('.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.focus();
+            }
+            return;
+        }
+
+        /* Show loading on submit buttons */
+        const btns = [document.getElementById('mobileSubmitBtn'), document.getElementById('desktopSubmitBtn')];
+        btns.forEach(btn => {
+            if (btn) {
+                btn.disabled = true;
+                const labelSpan = btn.querySelector('span:not(.ps-place-icon):not(.ps-total-currency):not(.finalTotalDisplay)');
+                if (labelSpan) {
+                    const origText = labelSpan.textContent;
+                    labelSpan.innerHTML = '<span class="ps-btn-spinner"></span>';
+                }
+            }
+        });
+        /* Let form submit naturally */
+    });
+
+    /* Remove invalid state on input */
+    checkoutForm.querySelectorAll('.ps-input').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+
+    /* ═══════════════ MODAL: UPDATE AMOUNT IF PROMO APPLIED ═══════════════ */
+    document.getElementById('paymentInstructionModal').addEventListener('show.bs.modal', function() {
+        const finalVal = document.getElementById('hiddenFinalTotal').value;
+        const modalDisplays = this.querySelectorAll('.finalTotalDisplay');
+        modalDisplays.forEach(el => el.textContent = parseFloat(finalVal).toFixed(2));
+    });
+</script>
+{% endblock %}
